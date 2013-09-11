@@ -1,26 +1,29 @@
 package drok.missilecommand.debris;
 
-public abstract class Debris {
-	//Field
-	protected float x, y;
-	protected float speed, direction, rotation;
+import drok.missilecommand.Entity;
+
+public abstract class Debris implements Entity {
 	
-	public Debris(int x, int y, float speed, float direction) {
+	protected float x, y;
+	protected float speed, direction, rotation = (float) (Math.random() * 360);
+	private boolean isHit = false;
+	
+	public Debris(float x, float y, float speed, float direction) {
 		this.x = x;
 		this.y = y;
 		this.speed = speed;
 		this.direction = direction;
 	}
 	
-	public abstract void render();
-	
-	public void update(int delta) {
+	public boolean update(int delta) {
+		if(isHit)
+			return true;
 		rotation += 0.01 * delta;
 		x += Math.cos(Math.toRadians(direction)) * speed * delta;
 		y += Math.sin(Math.toRadians(direction)) * speed * delta;
+		return false;
 	}
 	
-	//Getters
 	public float getX() {
 		return x;
 	}
@@ -31,5 +34,9 @@ public abstract class Debris {
 	
 	public float getSpeed() {
 		return speed;
+	}
+
+	public void hit() {
+		isHit  = true;
 	}
 }
