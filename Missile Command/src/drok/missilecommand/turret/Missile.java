@@ -9,12 +9,13 @@ import org.newdawn.slick.SlickException;
 
 import drok.missilecommand.Entity;
 import drok.missilecommand.debris.Debris;
+import drok.missilecommand.states.GameState;
 
 public class Missile implements Entity {
 	
 	private static Image missileImage;
 	protected List<Debris> debris;
-	private float x, y, direction;
+	private float x, y, dx, dy, direction;
 	private float tailX, tailY;
 	private int timer;
 	private boolean isHit;
@@ -28,6 +29,9 @@ public class Missile implements Entity {
 		
 		tailX = x;
 		tailY = y;
+		
+		dx = (float) (Math.cos(Math.toRadians(direction)) * 0.1);
+		dy = (float) (Math.sin(Math.toRadians(direction)) * 0.1);
 	}
 
 	public static void init() throws SlickException {
@@ -45,35 +49,37 @@ public class Missile implements Entity {
 	}
 
 	@Override
-	public boolean update(int delta) {
-		float dx = (float) (Math.cos(Math.toRadians(direction)) * 0.1 * delta);
-		float dy = (float) (Math.sin(Math.toRadians(direction)) * 0.1 * delta);
+	public boolean update(GameState gs, int delta) {
 		if(timer > 500 || isHit) {
 			if(isHit) {
 				dx *= 2;
 				dy *= 2;
 				tailColor.a -= 0.003f * delta;
+				if(Math.abs(x - tailX) < 2 && Math.abs(x - tailX) < 2) {
+					return true;
+				}
 			}
-			tailX += dx;
-			tailY += dy;
-			if(Math.abs(x - tailX) < 2 && Math.abs(x - tailX) < 2) {
-				return true;
-			}
+			tailX += dx * delta;
+			tailY += dy * delta;
+
 		} else {
 			timer += delta;
 		}
-		if(!isHit) {
-			x += dx;
-			y += dy;
-		}
 		
-		for(Debris deb : debris) {
-			if(deb.getX() - 4 < x && deb.getX() + 4 > x && deb.getY() - 4 < y && deb.getY() + 4 > y) {
-				deb.hit();
+		if(!isHit) {
+			x += dx * delta;
+			y += dy * delta;
+			
+			for(Debris deb : debris) {
+				if(!deb.isHit() && deb.getX() - 4 < x && deb.getX() + 4 > x && deb.getY() - 4 < y && deb.getY() + 4 > y) {
+					deb.hit();
+					isHit = true;
+				}
+			}
+			if(!gs.inBounds(x, y)) {
 				isHit = true;
 			}
 		}
 		return false;
 	}
-
 }

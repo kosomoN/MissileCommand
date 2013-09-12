@@ -8,7 +8,6 @@ import java.util.List;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
-import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.StateBasedGame;
 
@@ -21,33 +20,34 @@ import drok.missilecommand.turret.Turret;
 
 public class GameState extends State {
 
-	private static final int SCALE = 6;
-	
 	private List<Entity> entities = new ArrayList<Entity>();
 	private List<Debris> debris = new ArrayList<Debris>();
 	private List<Point> stars = new ArrayList<Point>();
 	private Turret turret;
 	private Planet planet;
-	private Image screemImg;
 
 	private int timeSinceLastDebris;
-	
+
 	public GameState(int state) {
 		super(state);
 	}
 
 	@Override
 	public void init(GameContainer container, StateBasedGame game) throws SlickException {
+		super.init(container, game);
 		planet = new Planet(container.getWidth() / 2 / SCALE, container.getHeight() / 2 / SCALE);
 
 		Asteroid.init();
 		Planet.init();
 		Missile.init();
 		
-		screemImg = new Image(container.getWidth() / SCALE, container.getHeight() / SCALE);
-		
 		for(int i = 0; i < 50; i++) {
-			stars.add(new Point((int) (Math.random() * screemImg.getWidth()), (int) (Math.random() * screemImg.getHeight())));
+			Point p = new Point((int) (Math.random() * screenImg.getWidth()), (int) (Math.random() * screenImg.getHeight()));
+			if(planet.getX() - 8 < p.x && planet.getX() + 8 > p.x && planet.getY() - 8 < p.y && planet.getY() + 8 > p.y) {
+				i--;
+				continue;
+			}
+			stars.add(p);
 		}
 	}
 
@@ -62,10 +62,9 @@ public class GameState extends State {
 			ent.render(g);
 		}
 		planet.render(g);
-		g.copyArea(screemImg, 0, 0);
+		g.copyArea(screenImg, 0, 0);
 		g.clear();
-		screemImg.draw(0, 0, SCALE);
-		
+		screenImg.draw(0, 0, SCALE);
 	}
 
 	@Override
@@ -73,30 +72,30 @@ public class GameState extends State {
 		planet.update(delta);
 		for(Iterator<Entity> it = entities.iterator(); it.hasNext();) {
 			Entity ent = it.next();
-			if(ent.update(delta)) {
+			if(ent.update(this, delta)) {
 				if(ent instanceof Debris)
 					debris.remove(ent);
 				it.remove();
 			}
 		}
 		timeSinceLastDebris += delta;
-		if(timeSinceLastDebris >= 2000) {
+		if(timeSinceLastDebris >= 1000) {
 			double rand = Math.random();
 			float x, y;
 			if(rand < 0.5) {
-				y = (float) (Math.random() * screemImg.getHeight());
+				y = (float) (Math.random() * screenImg.getHeight());
 				if(rand < 0.25)
 					x = -16;
 				else
-					x = screemImg.getWidth() + 16;
+					x = screenImg.getWidth() + 16;
 			} else {
-				x = (float) (Math.random() * screemImg.getWidth());
+				x = (float) (Math.random() * screenImg.getWidth());
 				if(rand < 0.75)
 					y = -16;
 				else
-					y = screemImg.getHeight() + 16;
+					y = screenImg.getHeight() + 16;
 			}
-			addDebris(new Asteroid(x, y, 0.01f, planet));
+			addDebris(new Asteroid(x, y, 0.02f, 0, planet));
 			timeSinceLastDebris = 0;
 		}
 	}
@@ -110,5 +109,20 @@ public class GameState extends State {
 	public void addDebris(Debris deb) {
 		debris.add(deb);
 		entities.add(deb);
+	}
+
+	public boolean inBounds(float x, float y) {
+		return !(x < 0 || y < 0 || x > screenImg.getWidth() || y > screenImg.getHeight());
+	}
+
+	public int getScreenWidth() {
+		return screenImg.getWidth();
+	}
+	
+	public int getScreenHeight() {
+		return screenImg.getHeight();
+	}
+
+	public void planetHit(Debris debris) {
 	}
 }

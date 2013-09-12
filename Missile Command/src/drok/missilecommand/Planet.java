@@ -1,20 +1,21 @@
 package drok.missilecommand;
 
-import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
+import org.newdawn.slick.geom.Vector2f;
 
 public class Planet {
 	//Fields
 	private static Image planet, planetTexture, mask;
-	private static int x, y;
+	private int x, y;
 	private int timer = 5000;
 	private int imgPos;
+	private Vector2f gravityVector = new Vector2f();
 	
 	public Planet(int x, int y) {
-		Planet.x = x;
-		Planet.y = y;
+		this.x = x;
+		this.y = y;
 	}
 	
 	public static void init() throws SlickException {
@@ -60,5 +61,12 @@ public class Planet {
 	
 	public int getY() {
 		return y;
+	}
+
+	public Vector2f getGravitationVector(float x, float y) {
+		float dir = (float) Math.toDegrees(Math.atan2(this.y - y, this.x - x));
+		gravityVector.x = (float) Math.cos(Math.toRadians(dir)) * 0.0002f;
+		gravityVector.y = (float) Math.sin(Math.toRadians(dir)) * 0.0002f;
+		return gravityVector;
 	}
 }
