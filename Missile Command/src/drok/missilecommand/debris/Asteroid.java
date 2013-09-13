@@ -19,7 +19,7 @@ public class Asteroid extends Debris {
 	private List<Part> parts = new ArrayList<Part>();
 	
 	public Asteroid(float x, float y, float speed, float direction, Planet planet) {
-		super(x, y, speed, direction, planet);
+		super(x, y, speed, direction, 4, planet);
 	}
 	/**
 	 * Creates an asteroid at the given location,
@@ -30,7 +30,7 @@ public class Asteroid extends Debris {
 	 * @param planet
 	 */
 	public Asteroid(float x, float y, float speed, Planet planet) {
-		super(x, y, speed, (float) Math.toDegrees(Math.atan2(planet.getY() - y, planet.getX() - x)), planet);
+		super(x, y, speed, (float) Math.toDegrees(Math.atan2(planet.getY() - y, planet.getX() - x)), 4, planet);
 	}
 
 	public static void init() throws SlickException {
@@ -41,7 +41,7 @@ public class Asteroid extends Debris {
 	@Override
 	public void render(Graphics g) {
 		if(!isHit) {
-			asteroidImage.setRotation(rotation);
+			asteroidImage.setRotation((int) rotation);
 			asteroidImage.drawCentered(x, y);
 		} else {
 			g.setColor(Color.darkGray);
@@ -55,7 +55,7 @@ public class Asteroid extends Debris {
 		super.update(gs, delta);
 		if(isHit) {
 			for(Iterator<Part> it = parts.iterator(); it.hasNext();) {
-				if(it.next().update(delta)) {
+				if(it.next().update(gs, delta)) {
 					it.remove();
 				}
 			}
@@ -89,13 +89,26 @@ public class Asteroid extends Debris {
 			g.fillRect(x, y, 1, 1);
 		}
 		
-		private boolean update(int delta) {
+		private boolean update(GameState gs, int delta) {
 			Vector2f vector = planet.getGravitationVector(x, y);
 			dx += vector.x;
 			dy += vector.y;
+			if(!planet.isHit()) {
+				dx *= 0.999f;
+				dy *= 0.999f;
+			}
 			x += dx * delta;
 			y += dy * delta;
-			return x + 1 > planet.getX() - 8 && x < planet.getX() + 8 && y + 1 > planet.getY() - 8 && y < planet.getY() + 8;
+			if((planet.getX() - x) * (planet.getX() - x) + (planet.getY() - y) * (planet.getY() - y) < 81 && !planet.isHit()) {//9 * 9
+				gs.smallHit();
+				return true;
+			}
+			return false;
 		}
+	}
+
+	@Override
+	public int getScore() {
+		return 10;
 	}
 }

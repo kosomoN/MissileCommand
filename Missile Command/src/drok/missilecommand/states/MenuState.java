@@ -1,18 +1,14 @@
 package drok.missilecommand.states;
 
-import java.awt.Font;
-import java.io.InputStream;
-
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.Input;
+import org.newdawn.slick.Music;
 import org.newdawn.slick.SlickException;
-import org.newdawn.slick.TrueTypeFont;
 import org.newdawn.slick.geom.Rectangle;
 import org.newdawn.slick.state.StateBasedGame;
-import org.newdawn.slick.util.ResourceLoader;
 
 import drok.missilecommand.Launch;
 import drok.missilecommand.utils.Util;
@@ -20,10 +16,9 @@ import drok.missilecommand.utils.Util;
 public class MenuState extends State {
 	//Fields
 	private float selectx, selecty;
-	private StateBasedGame game;
 	private Input input;
 	private GameContainer container;
-	private TrueTypeFont font;
+	private Music music;
 	
 	private Image planet;
 	private Image mask;
@@ -38,21 +33,8 @@ public class MenuState extends State {
 	@Override
 	public void init(GameContainer container, StateBasedGame game) throws SlickException {
 		super.init(container, game);
-		// load font from a .ttf file
-	    try {
-	        InputStream inputStream = ResourceLoader.getResourceAsStream("res/fonts/pixelmix.ttf");
-
-	        Font awtFont = Font.createFont(Font.TRUETYPE_FONT, inputStream);
-	        awtFont = awtFont.deriveFont(20f); // set font size
-	        font = new TrueTypeFont(awtFont, false);
-
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	    }
-	    
 	    selectx =  screenImg.getWidth() - 170 / SCALE;
 		selecty =  screenImg.getHeight() - 100 / SCALE;
-		this.game = game;
 		this.container = container;
 		input = container.getInput();
 		
@@ -62,6 +44,20 @@ public class MenuState extends State {
 		planetTexture.setFilter(Image.FILTER_NEAREST);
 		mask = new Image("res/graphics/Big Planet Mask.png");
 		mask.setFilter(Image.FILTER_NEAREST);
+		
+		music = new Music("res/audio/music_space.ogg");
+	}
+	
+	@Override
+	public void enter(GameContainer container, StateBasedGame game)	throws SlickException {
+		super.enter(container, game);
+		music.play();
+	}
+
+	@Override
+	public void leave(GameContainer container, StateBasedGame game) throws SlickException {
+		super.leave(container, game);
+		music.stop();
 	}
 
 	@Override

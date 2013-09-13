@@ -1,6 +1,5 @@
 package drok.missilecommand.turret;
 
-import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Image;
 
 public class Turret {
@@ -21,9 +20,9 @@ public class Turret {
 		
 	}
 	
-	private void calculateAngle(GameContainer container) {
+	/*private void calculateAngle(GameContainer container) {
 		angle = (float) Math.toDegrees(Math.atan2(container.getInput().getMouseY() - y, container.getInput().getMouseX() - x));
-	}
+	}*/
 	
 	//Getters
 	public int getX() {

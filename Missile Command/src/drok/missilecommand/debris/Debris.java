@@ -13,11 +13,13 @@ public abstract class Debris implements Entity {
 	protected Vector2f vector;
 	protected boolean isHit = false;
 	protected Planet planet;
+	private int radiusPlusPlanetRadiusSquared;
 	
-	public Debris(float x, float y, float speed, float direction, Planet planet) {
+	public Debris(float x, float y, float speed, float direction, int circleHitboxRadius, Planet planet) {
 		this.x = x;
 		this.y = y;
 		this.planet = planet;
+		this.radiusPlusPlanetRadiusSquared = (circleHitboxRadius + 8) * (circleHitboxRadius + 8);
 		
 		vector = new Vector2f((float) Math.cos(Math.toRadians(direction)) * speed,
 								(float) Math.sin(Math.toRadians(direction)) * speed);
@@ -25,16 +27,14 @@ public abstract class Debris implements Entity {
 	
 	@Override
 	public boolean update(GameState gs, int delta) {
-		rotation += 0.01 * delta;
+		rotation += 0.1;
 		
 		vector.add(planet.getGravitationVector(x, y));
-		
+		vector.scale(0.999f);
 		x += vector.x * delta;
 		y += vector.y * delta;
-		//x += Math.cos(Math.toRadians(direction)) * speed * delta;
-		//y += Math.sin(Math.toRadians(direction)) * speed * delta;
 		
-		if(!isHit && x + 4 > planet.getX() - 8 && x - 4 < planet.getX() + 8 && y + 4 > planet.getY() - 8 && y - 4 < planet.getY() + 8) {
+		if(!isHit && (planet.getX() - x) * (planet.getX() - x) + (planet.getY() - y) * (planet.getY() - y) < radiusPlusPlanetRadiusSquared && !planet.isHit()) {
 			gs.planetHit(this);
 			hit();
 		}
@@ -56,4 +56,6 @@ public abstract class Debris implements Entity {
 	public boolean isHit() {
 		return isHit;
 	}
+
+	public abstract int getScore();
 }

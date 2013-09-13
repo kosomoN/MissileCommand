@@ -15,7 +15,7 @@ public class Missile implements Entity {
 	
 	private static Image missileImage;
 	protected List<Debris> debris;
-	private float x, y, dx, dy, direction;
+	private float x, y, dx, dy;
 	private float tailX, tailY;
 	private int timer;
 	private boolean isHit;
@@ -24,7 +24,6 @@ public class Missile implements Entity {
 	public Missile(float x, float y, float direction, List<Debris> debris) {
 		this.x = x;
 		this.y = y;
-		this.direction = direction;
 		this.debris = debris;
 		
 		tailX = x;
@@ -42,18 +41,12 @@ public class Missile implements Entity {
 	@Override
 	public void render(Graphics g) {
 		g.drawGradientLine(x, y, tailColor, tailX, tailY, Color.transparent);
-		/*if(!isHit) {
-			missileImage.setRotation(direction + 90);
-			missileImage.drawCentered(x, y);
-		}*/
 	}
 
 	@Override
 	public boolean update(GameState gs, int delta) {
 		if(timer > 500 || isHit) {
 			if(isHit) {
-				dx *= 2;
-				dy *= 2;
 				tailColor.a -= 0.003f * delta;
 				if(Math.abs(x - tailX) < 2 && Math.abs(x - tailX) < 2) {
 					return true;
@@ -73,6 +66,7 @@ public class Missile implements Entity {
 			for(Debris deb : debris) {
 				if(!deb.isHit() && deb.getX() - 4 < x && deb.getX() + 4 > x && deb.getY() - 4 < y && deb.getY() + 4 > y) {
 					deb.hit();
+					gs.debrisDestroyed(deb);
 					isHit = true;
 				}
 			}
