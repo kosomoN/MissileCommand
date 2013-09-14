@@ -30,7 +30,9 @@ public abstract class Debris implements Entity {
 		rotation += 0.1;
 		
 		vector.add(planet.getGravitationVector(x, y));
-		vector.scale(0.999f);
+		if(!planet.isHit())
+			vector.scale(0.999f);
+		
 		x += vector.x * delta;
 		y += vector.y * delta;
 		

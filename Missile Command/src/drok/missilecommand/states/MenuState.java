@@ -11,6 +11,7 @@ import org.newdawn.slick.geom.Rectangle;
 import org.newdawn.slick.state.StateBasedGame;
 
 import drok.missilecommand.Launch;
+import drok.missilecommand.utils.ResourceManager;
 import drok.missilecommand.utils.Util;
 
 public class MenuState extends State {
@@ -25,6 +26,7 @@ public class MenuState extends State {
 	private Image planetTexture;
 	private int timer;
 	private int imgPos;
+	private Image arrow;
 
 	public MenuState(int state) {
 		super(state);
@@ -38,12 +40,12 @@ public class MenuState extends State {
 		this.container = container;
 		input = container.getInput();
 		
-		planet = new Image(120, 120);
+		/*planet = new Image(120, 120);
 		planet.setFilter(Image.FILTER_NEAREST);
 		planetTexture = new Image("res/graphics/Big Planet Texture.png");
 		planetTexture.setFilter(Image.FILTER_NEAREST);
 		mask = new Image("res/graphics/Big Planet Mask.png");
-		mask.setFilter(Image.FILTER_NEAREST);
+		mask.setFilter(Image.FILTER_NEAREST);*/
 		
 		music = new Music("res/audio/music_space.ogg");
 	}
@@ -51,6 +53,7 @@ public class MenuState extends State {
 	@Override
 	public void enter(GameContainer container, StateBasedGame game)	throws SlickException {
 		super.enter(container, game);
+		arrow = ResourceManager.getImage("res/graphics/Arrow.png");
 		music.play();
 	}
 
@@ -66,19 +69,18 @@ public class MenuState extends State {
 		g.copyArea(screenImg, 0, 0);
 		g.clear();
 		screenImg.draw(0, 0, SCALE);
-		
-		g.setFont(font);
-		g.setColor(Color.gray);
-		g.fillRect(selectx, selecty, 80 / SCALE, 20 / SCALE);
+		arrow.draw(container.getWidth() - 70, selecty);
+		g.setFont(bigFont);
 		g.setColor(Color.white);
-		g.drawString("Start", container.getWidth() - 150, container.getHeight() - 100);
-		g.drawString("Help", container.getWidth() - 150, container.getHeight() -  70);
-		g.drawString("Exit", container.getWidth() - 150, container.getHeight() -  40);
+		g.drawString("Start", container.getWidth() - 80 - bigFont.getWidth("Start"), container.getHeight() - 160);
+		g.drawString("Help", container.getWidth() - 80 - bigFont.getWidth("Help"), container.getHeight() -  110);
+		g.drawString("Exit", container.getWidth() - 80 - bigFont.getWidth("Exit"), container.getHeight() -  60);
 	}
 
 	@Override
 	public void update(GameContainer container, StateBasedGame game, int delta) throws SlickException {
 		//Moving background
+		/*
 		timer += delta;
 		
 		if(timer > 500) {
@@ -97,21 +99,21 @@ public class MenuState extends State {
 				e.printStackTrace();
 			}
 			timer = 0;
-		}
+		}*/
 		
 		//Changing menu selections
-		if(Util.isInside(input.getMouseX(), input.getMouseY(), new Rectangle(container.getWidth() - 151, container.getHeight() - 100, 50, 20))) {
-			selecty = container.getHeight() - 100;
+		if(Util.isInside(input.getMouseX(), input.getMouseY(), new Rectangle(container.getWidth() - 200, container.getHeight() - 165, 150, 50))) {
+			selecty = container.getHeight() - 150;
 			if(input.isMousePressed(Input.MOUSE_LEFT_BUTTON))
 				game.enterState(Launch.GAMESTATE);
-		} else if(Util.isInside(input.getMouseX(), input.getMouseY(), new Rectangle(container.getWidth() - 151, container.getHeight() - 70, 50, 20))) {
-			selecty = container.getHeight() - 70;
+		} else if(Util.isInside(input.getMouseX(), input.getMouseY(), new Rectangle(container.getWidth() - 200, container.getHeight() - 115, 150, 50))) {
+			selecty = container.getHeight() - 100;
 			if(input.isMousePressed(Input.MOUSE_LEFT_BUTTON))
 				game.enterState(Launch.HELPSTATE);
-		} else if(Util.isInside(input.getMouseX(), input.getMouseY(), new Rectangle(container.getWidth() - 151, container.getHeight() - 40, 50, 20))) {
-			selecty = container.getHeight() - 40;
+		} else if(Util.isInside(input.getMouseX(), input.getMouseY(), new Rectangle(container.getWidth() - 200, container.getHeight() - 65, 150, 65))) {
+			selecty = container.getHeight() - 50;
 			if(input.isMousePressed(Input.MOUSE_LEFT_BUTTON))
-				System.exit(0);
+				container.exit();
 		}
 	}
 	

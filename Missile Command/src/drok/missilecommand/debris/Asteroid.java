@@ -12,6 +12,7 @@ import org.newdawn.slick.geom.Vector2f;
 
 import drok.missilecommand.Planet;
 import drok.missilecommand.states.GameState;
+import drok.missilecommand.utils.ResourceManager;
 
 public class Asteroid extends Debris {
 
@@ -34,7 +35,7 @@ public class Asteroid extends Debris {
 	}
 
 	public static void init() throws SlickException {
-		asteroidImage = new Image("res/graphics/Asteroid.png");
+		asteroidImage = ResourceManager.getImage("res/graphics/Asteroid.png");
 		asteroidImage.setFilter(Image.FILTER_NEAREST);
 	}
 	

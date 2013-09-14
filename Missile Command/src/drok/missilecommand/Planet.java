@@ -12,6 +12,7 @@ import org.newdawn.slick.geom.Vector2f;
 
 import drok.missilecommand.debris.Debris;
 import drok.missilecommand.states.GameState;
+import drok.missilecommand.utils.ResourceManager;
 
 public class Planet {
 	//Fields
@@ -31,13 +32,13 @@ public class Planet {
 	}
 	
 	public static void init() throws SlickException {
-		planetTexture = new Image("res/graphics/Planet Texture.png");
+		planetTexture = ResourceManager.getImage("res/graphics/Planet Texture.png");
 		planetTexture.setFilter(Image.FILTER_NEAREST);
 		
 		planet = new Image(16, 16);
 		planet.setFilter(Image.FILTER_NEAREST);
 		
-		mask = new Image("res/graphics/Planet Mask.png");
+		mask = ResourceManager.getImage("res/graphics/Planet Mask.png");
 		mask.setFilter(Image.FILTER_NEAREST);
 	}
 	
@@ -164,6 +165,8 @@ public class Planet {
 			y += dy * delta;
 			
 			if(ticksLeftToInitialPos != -1) {
+				dx *= 1.01;
+				dy *= 1.01;
 				ticksLeftToInitialPos--;
 				if(ticksLeftToInitialPos == 0) {
 					return true;
@@ -174,8 +177,8 @@ public class Planet {
 		
 		private void returnToInitialPos() {
 			ticksLeftToInitialPos = 200;
-			dx = (initialPosX - x) / 2000;
-			dy = (initialPosY - y) / 2000;
+			dx = (initialPosX - x) / 6300;
+			dy = (initialPosY - y) / 6300;
 		}
 	}
 }

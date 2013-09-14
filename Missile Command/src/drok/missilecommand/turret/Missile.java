@@ -4,8 +4,6 @@ import java.util.List;
 
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
-import org.newdawn.slick.Image;
-import org.newdawn.slick.SlickException;
 
 import drok.missilecommand.Entity;
 import drok.missilecommand.debris.Debris;
@@ -13,7 +11,6 @@ import drok.missilecommand.states.GameState;
 
 public class Missile implements Entity {
 	
-	private static Image missileImage;
 	protected List<Debris> debris;
 	private float x, y, dx, dy;
 	private float tailX, tailY;
@@ -33,11 +30,6 @@ public class Missile implements Entity {
 		dy = (float) (Math.sin(Math.toRadians(direction)) * 0.1);
 	}
 
-	public static void init() throws SlickException {
-		missileImage = new Image("res/graphics/Missile.png");
-		missileImage.setFilter(Image.FILTER_NEAREST);
-	}
-	
 	@Override
 	public void render(Graphics g) {
 		g.drawGradientLine(x, y, tailColor, tailX, tailY, Color.transparent);
