@@ -1,4 +1,4 @@
-package drok.missilecommand.states;
+package drok.missilecommand.states.menu;
 
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
@@ -6,6 +6,7 @@ import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.StateBasedGame;
 
 import drok.missilecommand.Launch;
+import drok.missilecommand.states.State;
 import drok.missilecommand.utils.ResourceManager;
 
 public class LoadingState extends State {

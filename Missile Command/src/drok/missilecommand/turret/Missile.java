@@ -7,7 +7,7 @@ import org.newdawn.slick.Graphics;
 
 import drok.missilecommand.Entity;
 import drok.missilecommand.debris.Debris;
-import drok.missilecommand.states.GameState;
+import drok.missilecommand.states.game.GameState;
 
 public class Missile implements Entity {
 	

@@ -4,7 +4,7 @@ import org.newdawn.slick.geom.Vector2f;
 
 import drok.missilecommand.Entity;
 import drok.missilecommand.Planet;
-import drok.missilecommand.states.GameState;
+import drok.missilecommand.states.game.GameState;
 
 public abstract class Debris implements Entity {
 	

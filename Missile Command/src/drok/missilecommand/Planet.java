@@ -11,7 +11,7 @@ import org.newdawn.slick.SlickException;
 import org.newdawn.slick.geom.Vector2f;
 
 import drok.missilecommand.debris.Debris;
-import drok.missilecommand.states.GameState;
+import drok.missilecommand.states.game.GameState;
 import drok.missilecommand.utils.ResourceManager;
 
 public class Planet {

@@ -6,10 +6,15 @@ import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.StateBasedGame;
 
 import drok.missilecommand.states.*;
+import drok.missilecommand.states.game.GameState;
+import drok.missilecommand.states.menu.GameModeState;
+import drok.missilecommand.states.menu.HelpState;
+import drok.missilecommand.states.menu.LoadingState;
+import drok.missilecommand.states.menu.MenuState;
 
 public class Launch extends StateBasedGame {
 	//Fields
-	public static final int MENUSTATE = 0, GAMESTATE = 1, HELPSTATE = 2, LOADINGSTATE = 3;
+	public static final int MENUSTATE = 0, GAMEMODESTATE = 1, GAMESTATE = 2, HELPSTATE = 3, LOADINGSTATE = 4;
 	
 	public Launch() {
 		super("Missile Command");
@@ -20,12 +25,12 @@ public class Launch extends StateBasedGame {
 		State.init(container);
 		addState(new LoadingState(LOADINGSTATE));
 		addState(new MenuState(MENUSTATE));
+		addState(new GameModeState(GAMEMODESTATE));
 		addState(new GameState(GAMESTATE));
 		addState(new HelpState(HELPSTATE));
 	}
 
 	public static void main(String[] args) throws SlickException {
-		System.out.println();
 		AppGameContainer app = new AppGameContainer(new Launch());
 		app.setDisplayMode(app.getScreenWidth(), app.getScreenHeight(), true);
 		//app.setDisplayMode(1080, 680, false);

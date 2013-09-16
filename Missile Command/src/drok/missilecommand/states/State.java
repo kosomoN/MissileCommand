@@ -12,6 +12,7 @@ import org.newdawn.slick.state.StateBasedGame;
 
 public abstract class State extends BasicGameState {
 	private int state;
+	protected GameContainer container;
 	protected StateBasedGame game;
 	protected static final int SCALE = 6;
 	protected static Image screenImg;
@@ -19,8 +20,8 @@ public abstract class State extends BasicGameState {
 	
 	@Override
 	public void init(GameContainer container, StateBasedGame game) throws SlickException {
+		this.container = container;
 		this.game = game;
-
 	}
 
 	public static void init(GameContainer container) {
