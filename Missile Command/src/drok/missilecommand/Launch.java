@@ -5,16 +5,14 @@ import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.StateBasedGame;
 
-import drok.missilecommand.states.*;
-import drok.missilecommand.states.game.GameState;
-import drok.missilecommand.states.menu.GameModeState;
-import drok.missilecommand.states.menu.HelpState;
-import drok.missilecommand.states.menu.LoadingState;
-import drok.missilecommand.states.menu.MenuState;
+import drok.missilecommand.states.State;
+import drok.missilecommand.states.game.*;
+import drok.missilecommand.states.menu.*;
 
 public class Launch extends StateBasedGame {
 	//Fields
-	public static final int MENUSTATE = 0, GAMEMODESTATE = 1, GAMESTATE = 2, HELPSTATE = 3, LOADINGSTATE = 4;
+	public static final int MENUSTATE = 0, GAMEMODESTATE = 1, GAMESTATE = 2, HELPSTATE = 3, LOADINGSTATE = 4,
+			SHOPSTATE = 5;
 	
 	public Launch() {
 		super("Missile Command");
@@ -28,6 +26,7 @@ public class Launch extends StateBasedGame {
 		addState(new GameModeState(GAMEMODESTATE));
 		addState(new GameState(GAMESTATE));
 		addState(new HelpState(HELPSTATE));
+		addState(new ShopState(SHOPSTATE));
 	}
 
 	public static void main(String[] args) throws SlickException {

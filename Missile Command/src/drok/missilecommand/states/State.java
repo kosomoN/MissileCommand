@@ -14,9 +14,9 @@ public abstract class State extends BasicGameState {
 	private int state;
 	protected GameContainer container;
 	protected StateBasedGame game;
-	protected static final int SCALE = 6;
+	public static final int SCALE = 6;
 	protected static Image screenImg;
-	protected static TrueTypeFont font, bigFont;
+	protected static TrueTypeFont font16, font32;
 	
 	@Override
 	public void init(GameContainer container, StateBasedGame game) throws SlickException {
@@ -28,8 +28,8 @@ public abstract class State extends BasicGameState {
 	    try {
 	    	screenImg = new Image(container.getWidth() / SCALE, container.getHeight() / SCALE);
 	        Font awtFont = Font.createFont(Font.TRUETYPE_FONT, new File("res/fonts/pixelmix.ttf"));
-	        font = new TrueTypeFont(awtFont.deriveFont(16f), false);
-	        bigFont = new TrueTypeFont(awtFont.deriveFont(32f), false);
+	        font16 = new TrueTypeFont(awtFont.deriveFont(16f), false);
+	        font32 = new TrueTypeFont(awtFont.deriveFont(32f), false);
 	    } catch (Exception e) {
 	        e.printStackTrace();
 	    }  

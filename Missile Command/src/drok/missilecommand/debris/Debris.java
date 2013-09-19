@@ -1,5 +1,6 @@
 package drok.missilecommand.debris;
 
+import org.newdawn.slick.geom.Circle;
 import org.newdawn.slick.geom.Vector2f;
 
 import drok.missilecommand.Entity;
@@ -14,11 +15,13 @@ public abstract class Debris implements Entity {
 	protected boolean isHit = false;
 	protected Planet planet;
 	private int radiusPlusPlanetRadiusSquared;
+	private Circle boundingCircle;
 	
 	public Debris(float x, float y, float speed, float direction, int circleHitboxRadius, Planet planet) {
 		this.x = x;
 		this.y = y;
 		this.planet = planet;
+		boundingCircle = new Circle(x, y, circleHitboxRadius);
 		this.radiusPlusPlanetRadiusSquared = (circleHitboxRadius + 8) * (circleHitboxRadius + 8);
 		
 		vector = new Vector2f((float) Math.cos(Math.toRadians(direction)) * speed,
@@ -38,7 +41,7 @@ public abstract class Debris implements Entity {
 		
 		if(!isHit && (planet.getX() - x) * (planet.getX() - x) + (planet.getY() - y) * (planet.getY() - y) < radiusPlusPlanetRadiusSquared && !planet.isHit()) {
 			gs.planetHit(this);
-			hit();
+			hit(gs);
 		}
 		return false;
 	}
@@ -51,7 +54,7 @@ public abstract class Debris implements Entity {
 		return y;
 	}
 	
-	public void hit() {
+	public void hit(GameState gs) {
 		isHit  = true;
 	}
 
@@ -60,4 +63,10 @@ public abstract class Debris implements Entity {
 	}
 
 	public abstract int getScore();
+
+	public Circle getBoundingCircle() {
+		boundingCircle.setCenterX(x);
+		boundingCircle.setCenterY(y);
+		return boundingCircle;
+	}
 }

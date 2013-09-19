@@ -1,4 +1,4 @@
-package drok.missilecommand.turret;
+package drok.missilecommand.weapons;
 
 import java.util.List;
 
@@ -57,7 +57,7 @@ public class Missile implements Entity {
 			
 			for(Debris deb : debris) {
 				if(!deb.isHit() && deb.getX() - 4 < x && deb.getX() + 4 > x && deb.getY() - 4 < y && deb.getY() + 4 > y) {
-					deb.hit();
+					deb.hit(gs);
 					gs.debrisDestroyed(deb);
 					isHit = true;
 				}

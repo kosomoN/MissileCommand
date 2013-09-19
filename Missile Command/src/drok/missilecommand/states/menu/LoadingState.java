@@ -20,15 +20,15 @@ public class LoadingState extends State {
 	@Override
 	public void render(GameContainer container, StateBasedGame game, Graphics g) throws SlickException {
 		hasRendered = true;
-		g.setFont(bigFont);
-		g.drawString("Loading", (container.getWidth() - bigFont.getWidth("Loading")) / 2, container.getHeight() / 2);
+		g.setFont(font32);
+		g.drawString("Loading", (container.getWidth() - font32.getWidth("Loading")) / 2, container.getHeight() / 2);
 	}
 
 	@Override
 	public void update(GameContainer container, StateBasedGame game, int delta) throws SlickException {
 		if(hasRendered) {
 			ResourceManager.loadResources();
-			game.enterState(Launch.MENUSTATE);
+			game.enterState(Launch.SHOPSTATE);
 		}
 	}
 }
