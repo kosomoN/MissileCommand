@@ -1,10 +1,14 @@
 package drok.missilecommand.upgrades;
 
+import org.newdawn.slick.Color;
 import org.newdawn.slick.Image;
+
+import drok.missilecommand.states.game.GameState;
 
 public class ShieldMK1 extends Shield {
 	//Fields
 	private static int durability = 3;
+	private Color color = new Color(1, 1, 1, 1f);
 	
 	public ShieldMK1(int centerx, int centery, Image shieldImg) {
 		super(centerx, centery, durability, shieldImg);
@@ -16,10 +20,18 @@ public class ShieldMK1 extends Shield {
 
 	@Override
 	public void render() {
-		if(!isDestroyed)
-			shieldImg.drawCentered(x, y);
+		if(color.a > 0) {
+			shieldImg.draw(x - shieldImg.getWidth() / 2, y - shieldImg.getHeight() / 2 + 1, color);
+		}
 	}
 	
+	@Override
+	public boolean update(GameState gs) {
+		if(isDestroyed())
+			color.a -= 0.02f;
+		return super.update(gs);
+	}
+
 	@Override
 	public boolean isDestroyed() {
 		return isDestroyed;

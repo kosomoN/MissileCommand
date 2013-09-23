@@ -28,7 +28,7 @@ public class LoadingState extends State {
 	public void update(GameContainer container, StateBasedGame game, int delta) throws SlickException {
 		if(hasRendered) {
 			ResourceManager.loadResources();
-			game.enterState(Launch.SHOPSTATE);
+			game.enterState(Launch.MENUSTATE);
 		}
 	}
 }

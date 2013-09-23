@@ -26,6 +26,7 @@ public class ResourceManager {
 				if(f.getName().substring(f.getName().lastIndexOf(".")).equals(".png")) {
 					String path = f.getPath().replaceAll("\\\\", "/");
 					imgs.put(path, new Image(path));
+					imgs.get(path).setFilter(Image.FILTER_NEAREST);
 				}
 			}
 		}

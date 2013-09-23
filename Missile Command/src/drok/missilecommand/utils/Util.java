@@ -13,7 +13,7 @@ public class Util {
 	 * @return Returns true if the point(x, y) is inside the rectangle.
 	 */
 	
-	public static boolean isInside(int x, int y, Rectangle rect) {
+	public static boolean isInside(float x, float y, Rectangle rect) {
 		return x > rect.getX() && x < rect.getX() + rect.getWidth() &&
 				y > rect.getY() && y < rect.getY() + rect.getHeight();
 	}

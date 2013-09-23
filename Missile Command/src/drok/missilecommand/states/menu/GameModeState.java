@@ -3,63 +3,69 @@ package drok.missilecommand.states.menu;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
-import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
-import org.newdawn.slick.geom.Rectangle;
-import org.newdawn.slick.state.GameState;
 import org.newdawn.slick.state.StateBasedGame;
-import org.newdawn.slick.state.transition.Transition;
 
 import drok.missilecommand.Launch;
 import drok.missilecommand.states.State;
-import drok.missilecommand.utils.Util;
+import drok.missilecommand.utils.Button;
+import drok.missilecommand.utils.ResourceManager;
 
 public class GameModeState extends State {
 	//Fields
-	private GameContainer container;
-	private Image GUISheet, leftArrow, rightArrow, key;
-	private static int difflevel = 1;
+	private int mouseX, mouseY;
+	private Image GUISheet;
+	private static Difficulty difficulty = Difficulty.NORMAL;
 	private int arrowScale = 2;
-	private int halfwidth, halfheight;
 	private String command1 = "When you are ready,";
-	private String command2 = "take the key and get into your turret!";
+	private String command2 = "take the key and get ready for battle!";
 	private boolean leaving = false;
+	private Button leftArrow, rightArrow, play;
 	
 	public enum Difficulty {
-		EASY, NORMAL, HARD;
+		EASY(0), NORMAL(1), HARD(2);
+		
+		int asNumber;
+		private Difficulty(int asNumber) {
+			this.asNumber = asNumber;
+		}
+		
+		public int getAsNumber() {
+			return asNumber;
+		}
+		
+		public Difficulty getFromNumber(int num) {
+			for(Difficulty d : Difficulty.values())
+				if(d.asNumber == num)
+					return d;
+			
+			return null;
+		}
 		
 		public String toString() {
-			return super.toString();
+			String firstPart = super.toString().substring(0, 1);
+			String secondPart = super.toString().substring(1).toLowerCase();
+			return firstPart + secondPart;
 		}
+	}
+	
+	public enum GameMode {
+		ARCADE, CAMPAIGN;
 	}
 	
 	public GameModeState(int state) {
 		super(state);
-		System.out.println(Difficulty.EASY.toString());
-		try {
-			GUISheet = new Image("res/graphics/GUIsheet.png");
-			leftArrow = GUISheet.getSubImage(0, 0, 11, 11);
-			leftArrow.setFilter(Image.FILTER_NEAREST);
-			leftArrow = leftArrow.getScaledCopy(arrowScale);
-			
-			rightArrow = GUISheet.getSubImage(11, 0, 11, 11);
-			rightArrow.setFilter(Image.FILTER_NEAREST);
-			rightArrow = rightArrow.getScaledCopy(arrowScale);
-			
-			key = GUISheet.getSubImage(26, 26, 12, 5);
-			key.setFilter(Image.FILTER_NEAREST);
-			key = key.getScaledCopy(SCALE);
-		} catch (SlickException e) {
-			e.printStackTrace();
-		}
 	}
 	
 	@Override
 	public void init(GameContainer container, StateBasedGame game) throws SlickException {
 		super.init(container, game);
-		this.container = container;
-		halfwidth = container.getWidth() / 2;
-		halfheight = container.getHeight() / 2;
+		GUISheet = ResourceManager.getImage("res/graphics/GUIsheet.png");
+		
+		//Creating the buttons needed
+		leftArrow = new Button(container.getWidth() / 2 - 22 - 50 , container.getHeight() * 2 / 3, 11, 11, GUISheet.getSubImage(26, 0, 11, 11), arrowScale);
+		rightArrow = new Button(container.getWidth() / 2 + 50 , container.getHeight() * 2 / 3, 11, 11, GUISheet.getSubImage(37, 0, 11, 11), arrowScale);
+		play = new Button(container.getWidth() / 2 - 6 * SCALE , container.getHeight() - 40 - 10, 12, 5, GUISheet.getSubImage(26, 11, 12, 5), SCALE);
 	}
 
 	@Override
@@ -75,103 +81,43 @@ public class GameModeState extends State {
 			g.setFont(font16);
 			
 			//Rendering commands
-			g.drawString(command1, halfwidth - 100, 50);
-			g.drawString(command2, halfwidth - 200, 75);
+			g.drawString(command1, container.getWidth() / 2 - 100, 50);
+			g.drawString(command2, container.getWidth() / 2 - 200, 75);
 			
-			//Bad code!
 			//Drawing difficulty
-			if(difflevel == 0) {
-				g.drawString("Easy", halfwidth - 20, halfheight);
-			} else if(difflevel == 1) {
-				g.drawString("Medium", halfwidth - 30, halfheight);
-			} else if(difflevel == 2) {
-				g.drawString("Hard", halfwidth - 20, halfheight);
-			}
+			g.drawString(difficulty.toString(), container.getWidth() / 2 - g.getFont().getWidth(difficulty.toString()) / 2, container.getHeight() * 2 / 3);
 			
 			//Drawing arrows and difficulty title
-			g.drawString("Difficulty", halfwidth - 50, halfheight - 30);
-			leftArrow.draw(halfwidth - leftArrow.getWidth() - 50, halfheight);
-			rightArrow.draw(halfwidth + 50, halfheight);
+			g.drawString("Difficulty", container.getWidth() / 2 - g.getFont().getWidth("Difficulty") / 2, container.getHeight() * 2 / 3 - g.getFont().getLineHeight() / 2 - 50);
+			leftArrow.render(g);
+			rightArrow.render(g);
 			
 			//Drawing play button and key
-			g.drawString("Play", halfwidth - 20, container.getHeight() - key.getHeight() - 50);
-			key.drawCentered(halfwidth, container.getHeight() - key.getHeight() - 10);
+			g.drawString("Play", container.getWidth() / 2 - g.getFont().getWidth("Play") / 2, container.getHeight() - play.getHeight() - 50);
+			play.render(g);
 		}
 	}
 
 	@Override
 	public void update(GameContainer container, StateBasedGame game, int delta) throws SlickException {
+		mouseX = container.getInput().getMouseX();
+		mouseY = container.getInput().getMouseY();
 		
-	}
-
-	@Override
-	public void keyPressed(int key, char c) {
-		super.keyPressed(key, c);
-		if(key == Input.KEY_ENTER) {
-			leaving = true;
-			game.enterState(Launch.GAMESTATE, new Transition() {
-				private int delta = 0;
-				@Override
-				public void update(StateBasedGame game, GameContainer container, int delta) throws SlickException {
-					this.delta += delta;
-				}
-				
-				@Override
-				public void preRender(StateBasedGame game, GameContainer container, Graphics g) throws SlickException {
-					g.setFont(font32);
-					g.drawString("Loading...", container.getWidth() / 2 - font16.getWidth("Loading...") / 2, container.getHeight() / 2 - 10);
-				}
-				
-				@Override
-				public void postRender(StateBasedGame game, GameContainer container, Graphics g) throws SlickException {
-					g.clear();
-				}
-				
-				@Override
-				public boolean isComplete() {
-					return delta > 1000;
-				}
-				
-				@Override
-				public void init(GameState gs1, GameState gs2) {
-					
-				}
-			}, null);
-		} else if(key == Input.KEY_LEFT) {
-			if(difflevel > 0)
-				difflevel--;
-		} else if(key == Input.KEY_RIGHT) {
-			if(difflevel < 2) {
-				difflevel++;
-			}
-		}
-	}
-
-	@Override
-	public void mousePressed(int button, int x, int y) {
-		super.mousePressed(button, x, y);
-		if(button == Input.MOUSE_LEFT_BUTTON) {
-			if(Util.isInside(x, y, new Rectangle(halfwidth - leftArrow.getWidth() - 50, halfheight, 11 * arrowScale, 11* arrowScale))) {
-				if(difflevel > 0)
-					difflevel--;
-			} else if(Util.isInside(x, y, new Rectangle(halfwidth + 50, halfheight, 11 * arrowScale, 11  * arrowScale))) {
-				if(difflevel < 2)
-					difflevel++;
-			} else if(Util.isInside(x, y, new Rectangle(halfwidth - 20, container.getHeight() - key.getHeight() - 50, 41, 20))) {
-				game.enterState(Launch.GAMESTATE);
-			}
+		if(leftArrow.clicked(mouseX, mouseY, container)) {
+			if(difficulty.asNumber > 0)
+				difficulty = difficulty.getFromNumber(difficulty.getAsNumber() - 1);
+		} else if(rightArrow.clicked(mouseX, mouseY, container)) {
+			if(difficulty.asNumber < 2)
+				difficulty = difficulty.getFromNumber(difficulty.getAsNumber() + 1);
+		} else if(play.clicked(mouseX, mouseY, container)) {
+			if(MenuState.isPlayingArcade())
+				game.enterState(Launch.LEVELGAMESTATE);
+			else
+				game.enterState(Launch.ENDLESSGAMESTATE);
 		}
 	}
 
 	public static String getDifficulty() {
-		if(difflevel == 0) {
-			return Difficulty.EASY.toString();
-		} else if(difflevel == 1) {
-			return Difficulty.NORMAL.toString();
-		} else if(difflevel == 2) {
-			return Difficulty.NORMAL.toString();
-		} else {
-			return "Exception in: GameModeState.java - public static String getDifficulty() [lines:166-176]";
-		}
+		return difficulty.toString();
 	}
 }

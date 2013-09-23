@@ -10,6 +10,8 @@ import org.newdawn.slick.TrueTypeFont;
 import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
 
+import drok.missilecommand.utils.ResourceManager;
+
 public abstract class State extends BasicGameState {
 	private int state;
 	protected GameContainer container;
@@ -26,6 +28,7 @@ public abstract class State extends BasicGameState {
 
 	public static void init(GameContainer container) {
 	    try {
+	    	ResourceManager.loadResources();
 	    	screenImg = new Image(container.getWidth() / SCALE, container.getHeight() / SCALE);
 	        Font awtFont = Font.createFont(Font.TRUETYPE_FONT, new File("res/fonts/pixelmix.ttf"));
 	        font16 = new TrueTypeFont(awtFont.deriveFont(16f), false);

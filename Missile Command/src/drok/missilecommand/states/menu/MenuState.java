@@ -7,13 +7,12 @@ import org.newdawn.slick.Image;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.Music;
 import org.newdawn.slick.SlickException;
-import org.newdawn.slick.geom.Rectangle;
 import org.newdawn.slick.state.StateBasedGame;
 
 import drok.missilecommand.Launch;
 import drok.missilecommand.states.State;
+import drok.missilecommand.utils.Button;
 import drok.missilecommand.utils.ResourceManager;
-import drok.missilecommand.utils.Util;
 
 public class MenuState extends State {
 	//Fields
@@ -21,7 +20,9 @@ public class MenuState extends State {
 	private Music music;
 	private Image arrow, background;
 	private Input input;
-	private boolean ignoreClick = false;
+	private boolean ignoreClick;
+	private static boolean playArcade = false;
+	private Button arcade, campaign, help, exit;
 
 	public MenuState(int state) {
 		super(state);
@@ -30,8 +31,12 @@ public class MenuState extends State {
 	@Override
 	public void init(GameContainer container, StateBasedGame game) throws SlickException {
 		super.init(container, game);
-
 		input = container.getInput();
+		
+		campaign = new Button(container.getWidth() - 80 - font32.getWidth("Campaign"), container.getHeight() - font32.getLineHeight() * 4 - 40, font32.getWidth("Campaign"), font32.getHeight(), "Campaign", new Color(200, 0, 50, 1f), Color.white);
+		arcade = new Button(container.getWidth() - 80 - font32.getWidth("Arcade"), container.getHeight() - font32.getLineHeight() * 3 - 30, font32.getWidth("Arcade"), font32.getHeight(), "Arcade", new Color(20, 0, 50, 0f), Color.white);
+		help = new Button(container.getWidth() - 80 - font32.getWidth("Help"), container.getHeight() - font32.getLineHeight() * 2 - 20, font32.getWidth("Help"), font32.getHeight(), "Help", new Color(20, 0, 50, 0f), Color.white);
+		exit = new Button(container.getWidth() - 80 - font32.getWidth("Exit"), container.getHeight() - font32.getLineHeight() - 10, font32.getWidth("Exit"), font32.getHeight(), "Exit", new Color(20, 0, 50, 0f), Color.white);
 	}
 	
 	@Override
@@ -39,6 +44,7 @@ public class MenuState extends State {
 		super.enter(container, game);
 		ignoreClick = true;
 		if(music == null) {
+			ignoreClick = false;
 			music = new Music("res/audio/music_space.ogg", true);
 			arrow = ResourceManager.getImage("res/graphics/Arrow.png");
 			background = ResourceManager.getImage("res/graphics/Background.png");
@@ -52,34 +58,39 @@ public class MenuState extends State {
 
 	@Override
 	public void render(GameContainer container, StateBasedGame game, Graphics g) throws SlickException {
-		background.draw((container.getWidth() - background.getWidth()) / 2, 0);
+		//background.draw((container.getWidth() - background.getWidth()) / 2, 0);
 		arrow.draw(selectx, selecty);
-		g.setFont(font32);
-		g.setColor(Color.white);
-		g.drawString("Start", container.getWidth() - 80 - font32.getWidth("Start"), container.getHeight() - 160);
-		g.drawString("Help", container.getWidth() - 80 - font32.getWidth("Help"), container.getHeight() -  110);
-		g.drawString("Exit", container.getWidth() - 80 - font32.getWidth("Exit"), container.getHeight() -  60);
+
+		arcade.renderWithoutBorder(g, font32);
+		campaign.renderWithoutBorder(g, font32);
+		help.renderWithoutBorder(g, font32);
+		exit.renderWithoutBorder(g, font32);
 	}
 
 	@Override
 	public void update(GameContainer container, StateBasedGame game, int delta) throws SlickException {
-		if(Util.isInside(input.getMouseX(), input.getMouseY(), new Rectangle(container.getWidth() - 80 - font32.getWidth("Start"), container.getHeight() - 160,
-				font32.getWidth("Start"), font32.getHeight()))) {
-			selecty = container.getHeight() - 160;
-			if(input.isMousePressed(Input.MOUSE_LEFT_BUTTON) && !ignoreClick) {
-				music.stop();
-				game.enterState(Launch.GAMEMODESTATE);
+		if(!ignoreClick) {
+			if(campaign.hoverOver(input.getMouseX(), input.getMouseY())) {
+				selecty = campaign.getY() + campaign.getHeight() / 4;
+				if(campaign.clicked(input.getMouseX(), input.getMouseY(), container)) {
+					music.stop();
+					//Must check if campaign already started
+					playArcade = true;
+					game.enterState(Launch.GAMEMODESTATE);
+				}
+			} else if(arcade.hoverOver(input.getMouseX(), input.getMouseY())) {
+				selecty = arcade.getY() + arcade.getHeight() / 4;
+				if(arcade.clicked(input.getMouseX(), input.getMouseY(), container))
+					game.enterState(Launch.GAMEMODESTATE);
+			} else if(help.hoverOver(input.getMouseX(), input.getMouseY())) {
+				selecty = help.getY() + help.getHeight() / 4;
+				if(help.clicked(input.getMouseX(), input.getMouseY(), container))
+					game.enterState(Launch.HELPSTATE);
+			} else if(exit.hoverOver(input.getMouseX(), input.getMouseY())) {
+				selecty = exit.getY() + exit.getHeight() / 4;
+				if(exit.clicked(input.getMouseX(), input.getMouseY(), container))
+					container.exit();
 			}
-		} else if(Util.isInside(input.getMouseX(), input.getMouseY(), new Rectangle(container.getWidth() - 80 - font32.getWidth("Help"), container.getHeight() - 110,
-				font32.getWidth("Help"), font32.getHeight()))) {
-			selecty = container.getHeight() - 110;
-			if(input.isMousePressed(Input.MOUSE_LEFT_BUTTON) && !ignoreClick)
-				game.enterState(Launch.HELPSTATE);
-		} else if(Util.isInside(input.getMouseX(), input.getMouseY(), new Rectangle(container.getWidth() - 80 - font32.getWidth("Exit"), container.getHeight() - 60,
-				font32.getWidth("Exit"), font32.getHeight()))) {
-			selecty = container.getHeight() - 60;
-			if(input.isMousePressed(Input.MOUSE_LEFT_BUTTON) && !ignoreClick)
-				container.exit();
 		}
 	}
 
@@ -90,5 +101,7 @@ public class MenuState extends State {
 			ignoreClick = false;
 	}
 	
-	
+	public static boolean isPlayingArcade() {
+		return playArcade;
+	}
 }
