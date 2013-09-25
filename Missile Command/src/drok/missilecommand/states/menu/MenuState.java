@@ -40,16 +40,19 @@ public class MenuState extends State {
 	}
 	
 	@Override
+	public void firstTimeEnter() throws SlickException {
+		super.firstTimeEnter();
+		ignoreClick = false;
+		music = new Music("res/audio/music_space.ogg", true);
+		arrow = ResourceManager.getImage("res/graphics/Arrow.png");
+		background = ResourceManager.getImage("res/graphics/Background.png");
+		background = background.getScaledCopy((float) container.getHeight() / background.getHeight());
+	}
+
+	@Override
 	public void enter(GameContainer container, StateBasedGame game)	throws SlickException {
-		super.enter(container, game);
 		ignoreClick = true;
-		if(music == null) {
-			ignoreClick = false;
-			music = new Music("res/audio/music_space.ogg", true);
-			arrow = ResourceManager.getImage("res/graphics/Arrow.png");
-			background = ResourceManager.getImage("res/graphics/Background.png");
-			background = background.getScaledCopy((float) container.getHeight() / background.getHeight());
-		}
+		super.enter(container, game);
 		selectx =  container.getWidth() - (80 - arrow.getWidth());
 		selecty =  container.getHeight() - 160;
 		if(!music.playing())
@@ -73,15 +76,17 @@ public class MenuState extends State {
 			if(campaign.hoverOver(input.getMouseX(), input.getMouseY())) {
 				selecty = campaign.getY() + campaign.getHeight() / 4;
 				if(campaign.clicked(input.getMouseX(), input.getMouseY(), container)) {
-					music.stop();
+					music.fade(2000, 0, true);
 					//Must check if campaign already started
 					playArcade = true;
-					game.enterState(Launch.GAMEMODESTATE);
+					game.enterState(Launch.LEVELSELECTSTATE);
 				}
 			} else if(arcade.hoverOver(input.getMouseX(), input.getMouseY())) {
 				selecty = arcade.getY() + arcade.getHeight() / 4;
-				if(arcade.clicked(input.getMouseX(), input.getMouseY(), container))
+				if(arcade.clicked(input.getMouseX(), input.getMouseY(), container)) {
+					music.fade(2000, 0, true);
 					game.enterState(Launch.GAMEMODESTATE);
+				}
 			} else if(help.hoverOver(input.getMouseX(), input.getMouseY())) {
 				selecty = help.getY() + help.getHeight() / 4;
 				if(help.clicked(input.getMouseX(), input.getMouseY(), container))

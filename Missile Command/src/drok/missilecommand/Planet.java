@@ -16,7 +16,8 @@ import drok.missilecommand.utils.ResourceManager;
 
 public class Planet {
 	//Fields
-	private static Image planet, planetTexture, mask;
+	private static Image planet, mask;
+	private Image planetTexture;
 	private int x, y;
 	private int timer = 5000;
 	private int imgPos;
@@ -26,20 +27,18 @@ public class Planet {
 	private List<Part> parts = new ArrayList<Part>();
 	private Color green = new Color(8, 57, 12), blue = new Color(2, 23, 82);
 
-	public Planet(int x, int y) {
+	public Planet(int x, int y, String name) {
 		this.x = x;
 		this.y = y;
+		
+		planetTexture = ResourceManager.getImage("res/graphics/Planet " + name + " Texture.png");
 	}
 	
 	public static void init() throws SlickException {
-		planetTexture = ResourceManager.getImage("res/graphics/Planet Texture.png");
-		planetTexture.setFilter(Image.FILTER_NEAREST);
-		
 		planet = new Image(16, 16);
 		planet.setFilter(Image.FILTER_NEAREST);
 		
 		mask = ResourceManager.getImage("res/graphics/Planet Mask.png");
-		mask.setFilter(Image.FILTER_NEAREST);
 	}
 	
 	public void render(Graphics g) {
@@ -119,19 +118,10 @@ public class Planet {
 
 	public void hit(Debris debris) {
 		isHit = true;
-		System.out.println("Hit");
 		Color c;
 		for(int i = 0; i < planet.getWidth(); i++) {
 			for(int j = 0; j < planet.getHeight(); j++) {
 				c = planet.getColor(i, j);
-				if(c.a == 0)
-					continue;
-				
-				if(c.b > c.g)
-					c = blue;
-				else
-					c = green;
-				
 				parts.add(new Part(x + i - 8, y + j - 8, Math.random() * 360, 0.005f + Math.random() / 90f, c));
 			}
 		}

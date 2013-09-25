@@ -11,7 +11,9 @@ import drok.missilecommand.states.menu.*;
 
 public class Launch extends StateBasedGame {
 	//Fields
-	public static final int LOADINGSTATE = 0, MENUSTATE = 1, GAMEMODESTATE = 2, ENDLESSGAMESTATE = 3, HELPSTATE = 4, LEVELGAMESTATE = 5, SHOPSTATE = 6;
+	public static final int LOADINGSTATE = 0, MENUSTATE = 1, GAMEMODESTATE = 2,
+							ENDLESSGAMESTATE = 3, HELPSTATE = 4, LEVELGAMESTATE = 5,
+							SHOPSTATE = 6, LEVELSELECTSTATE = 7;
 	
 	public Launch() {
 		super("Missile Command");
@@ -27,14 +29,14 @@ public class Launch extends StateBasedGame {
 		addState(new LevelBasedGameState(LEVELGAMESTATE));
 		addState(new HelpState(HELPSTATE));
 		addState(new ShopState(SHOPSTATE));
-		//enterState(SHOPSTATE);
+		addState(new LevelSelectState(LEVELSELECTSTATE));
 	}
 
 	public static void main(String[] args) throws SlickException {
 		AppGameContainer app = new AppGameContainer(new Launch());
 		//app.setDisplayMode(app.getScreenWidth(), app.getScreenHeight(), true);
-		app.setDisplayMode(1080, 680, false);
-		//app.setTargetFrameRate(60);
+		app.setDisplayMode(1600, 900, false);
+		app.setTargetFrameRate(60);
 		app.setMaximumLogicUpdateInterval(10);
 		app.setMinimumLogicUpdateInterval(10);
 		app.setShowFPS(false);

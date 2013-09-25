@@ -6,6 +6,7 @@ import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.StateBasedGame;
 
+import drok.missilecommand.Planet;
 import drok.missilecommand.debris.Asteroid;
 import drok.missilecommand.debris.BigAsteroid;
 
@@ -15,6 +16,12 @@ public class EndlessGameState extends GameState {
 	
 	public EndlessGameState(int state) {
 		super(state);
+	}
+
+	@Override
+	public void enter(GameContainer container, StateBasedGame game) throws SlickException {
+		planet = new Planet(container.getWidth() / 2 / SCALE, container.getHeight() / 2 / SCALE, "Earth");
+		super.enter(container, game);
 	}
 
 	@Override

@@ -56,13 +56,12 @@ public class GameModeState extends State {
 	public GameModeState(int state) {
 		super(state);
 	}
-	
+
 	@Override
-	public void init(GameContainer container, StateBasedGame game) throws SlickException {
-		super.init(container, game);
+	public void firstTimeEnter() throws SlickException {
+		super.firstTimeEnter();
 		GUISheet = ResourceManager.getImage("res/graphics/GUIsheet.png");
 		
-		//Creating the buttons needed
 		leftArrow = new Button(container.getWidth() / 2 - 22 - 50 , container.getHeight() * 2 / 3, 11, 11, GUISheet.getSubImage(26, 0, 11, 11), arrowScale);
 		rightArrow = new Button(container.getWidth() / 2 + 50 , container.getHeight() * 2 / 3, 11, 11, GUISheet.getSubImage(37, 0, 11, 11), arrowScale);
 		play = new Button(container.getWidth() / 2 - 6 * SCALE , container.getHeight() - 40 - 10, 12, 5, GUISheet.getSubImage(26, 11, 12, 5), SCALE);

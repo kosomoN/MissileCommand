@@ -18,18 +18,6 @@ public class Asteroid extends Debris {
 	public Asteroid(float x, float y, float speed, float direction, Planet planet) {
 		super(x, y, speed, direction, 4, planet);
 	}
-	
-	/**
-	 * Creates an asteroid at the given location,
-	 * pointing in the direction of the planet
-	 * @param x 
-	 * @param y
-	 * @param speed
-	 * @param planet
-	 */
-	public Asteroid(float x, float y, float speed, Planet planet) {
-		super(x, y, speed, (float) Math.toDegrees(Math.atan2(planet.getY() - y, planet.getX() - x)), 4, planet);
-	}
 
 	public static void init() throws SlickException {
 		asteroidImage = ResourceManager.getImage("res/graphics/Asteroid.png");
