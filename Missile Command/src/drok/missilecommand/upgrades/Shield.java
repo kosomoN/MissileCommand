@@ -9,21 +9,19 @@ import drok.missilecommand.states.game.GameState;
 
 public abstract class Shield implements Upgrade {
 	//Fields
-	protected int x, y;
+	protected float x, y;
 	protected boolean isDestroyed;
 	protected Image shieldImg;
 	protected int durability;
+	protected GameState gs;
 	
-	public Shield(int x, int y, int durability, Image img) {
+	public Shield(float x, float y, int durability, Image img, GameState gs) {
 		this.x = x;
 		this.y = y;
 		this.durability = durability;
+		this.gs = gs;
 		shieldImg = img;
 		isDestroyed = false;
-	}
-	
-	public Shield(int durability) {
-		
 	}
 	
 	public abstract void render();

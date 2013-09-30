@@ -17,12 +17,11 @@ import drok.missilecommand.utils.ResourceManager;
 public class MenuState extends State {
 	//Fields
 	private float selectx, selecty;
-	private Music music;
 	private Image arrow, background;
 	private Input input;
 	private boolean ignoreClick;
 	private static boolean playArcade = false;
-	private Button arcade, campaign, help, exit;
+	private Button arcade, campaign, help, exit, muteMusic, muteSound;
 
 	public MenuState(int state) {
 		super(state);
@@ -42,8 +41,14 @@ public class MenuState extends State {
 	@Override
 	public void firstTimeEnter() throws SlickException {
 		super.firstTimeEnter();
+		Image img = ResourceManager.getImage("res/graphics/UnMute.png");
+		
 		ignoreClick = false;
 		music = new Music("res/audio/music_space.ogg", true);
+		muteMusic = new Button(container.getWidth() - img.getWidth() - 10, 10, img.getWidth(), img.getHeight(), img, 1);
+		img = ResourceManager.getImage("res/graphics/UnMuteSound.png");
+		muteSound = new Button(container.getWidth() - 2 * img.getWidth() - 2 * 10, 10, img.getWidth(), img.getHeight(), img, 1);
+		
 		arrow = ResourceManager.getImage("res/graphics/Arrow.png");
 		background = ResourceManager.getImage("res/graphics/Background.png");
 		background = background.getScaledCopy((float) container.getHeight() / background.getHeight());
@@ -61,40 +66,60 @@ public class MenuState extends State {
 
 	@Override
 	public void render(GameContainer container, StateBasedGame game, Graphics g) throws SlickException {
-		//background.draw((container.getWidth() - background.getWidth()) / 2, 0);
+		background.draw((container.getWidth() - background.getWidth()) / 2, 0);
 		arrow.draw(selectx, selecty);
 
 		arcade.renderWithoutBorder(g, font32);
 		campaign.renderWithoutBorder(g, font32);
 		help.renderWithoutBorder(g, font32);
 		exit.renderWithoutBorder(g, font32);
+		muteMusic.render(g);
+		muteSound.render(g);
 	}
 
 	@Override
 	public void update(GameContainer container, StateBasedGame game, int delta) throws SlickException {
-		if(!ignoreClick) {
-			if(campaign.hoverOver(input.getMouseX(), input.getMouseY())) {
-				selecty = campaign.getY() + campaign.getHeight() / 4;
-				if(campaign.clicked(input.getMouseX(), input.getMouseY(), container)) {
-					music.fade(2000, 0, true);
-					//Must check if campaign already started
-					playArcade = true;
-					game.enterState(Launch.LEVELSELECTSTATE);
+		if(campaign.hoverOver(input.getMouseX(), input.getMouseY())) {
+			selecty = campaign.getY() + campaign.getHeight() / 4;
+			if(!ignoreClick && campaign.clicked(input.getMouseX(), input.getMouseY(), container)) {
+				//music.fade(2000, 0, true);
+				//Must check if campaign already started
+				game.enterState(Launch.LEVELSELECTSTATE);
+			}
+		} else if(arcade.hoverOver(input.getMouseX(), input.getMouseY())) {
+			selecty = arcade.getY() + arcade.getHeight() / 4;
+			if(!ignoreClick && arcade.clicked(input.getMouseX(), input.getMouseY(), container)) {
+				//fadeMusic(2000);
+				playArcade = true;
+				game.enterState(Launch.GAMEMODESTATE);
+			}
+		} else if(help.hoverOver(input.getMouseX(), input.getMouseY())) {
+			selecty = help.getY() + help.getHeight() / 4;
+			if(!ignoreClick && help.clicked(input.getMouseX(), input.getMouseY(), container))
+				game.enterState(Launch.HELPSTATE);
+		} else if(exit.hoverOver(input.getMouseX(), input.getMouseY())) {
+			selecty = exit.getY() + exit.getHeight() / 4;
+			if(!ignoreClick && exit.clicked(input.getMouseX(), input.getMouseY(), container))
+				container.exit();
+		} else if(muteMusic.hoverOver(input.getMouseX(), input.getMouseY())) {
+			if(muteMusic.clicked(input.getMouseX(), input.getMouseY(), container)) {
+				if(muteMusic.getImage().equals(ResourceManager.getImage("res/graphics/Mute.png"))) {
+					muteMusic.changeImage(ResourceManager.getImage("res/graphics/UnMute.png"));
+					container.setMusicOn(true);
+				} else {
+					muteMusic.changeImage(ResourceManager.getImage("res/graphics/Mute.png"));
+					container.setMusicOn(false);
 				}
-			} else if(arcade.hoverOver(input.getMouseX(), input.getMouseY())) {
-				selecty = arcade.getY() + arcade.getHeight() / 4;
-				if(arcade.clicked(input.getMouseX(), input.getMouseY(), container)) {
-					music.fade(2000, 0, true);
-					game.enterState(Launch.GAMEMODESTATE);
+			}
+		} else if(muteSound.hoverOver(input.getMouseX(), input.getMouseY())) {
+			if(muteSound.clicked(input.getMouseX(), input.getMouseY(), container)) {
+				if(muteSound.getImage().equals(ResourceManager.getImage("res/graphics/MuteSound.png"))) {
+					muteSound.changeImage(ResourceManager.getImage("res/graphics/UnMuteSound.png"));
+					container.setSoundOn(true);
+				} else {
+					muteSound.changeImage(ResourceManager.getImage("res/graphics/MuteSound.png"));
+					container.setSoundOn(false);
 				}
-			} else if(help.hoverOver(input.getMouseX(), input.getMouseY())) {
-				selecty = help.getY() + help.getHeight() / 4;
-				if(help.clicked(input.getMouseX(), input.getMouseY(), container))
-					game.enterState(Launch.HELPSTATE);
-			} else if(exit.hoverOver(input.getMouseX(), input.getMouseY())) {
-				selecty = exit.getY() + exit.getHeight() / 4;
-				if(exit.clicked(input.getMouseX(), input.getMouseY(), container))
-					container.exit();
 			}
 		}
 	}
@@ -108,5 +133,9 @@ public class MenuState extends State {
 	
 	public static boolean isPlayingArcade() {
 		return playArcade;
+	}
+	
+	public void fadeMusic(int duration) {
+		music.fade(duration, 0, true);
 	}
 }

@@ -11,10 +11,13 @@ import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.StateBasedGame;
 
+import drok.missilecommand.Launch;
 import drok.missilecommand.states.State;
 import drok.missilecommand.upgrades.ShieldMK1;
+import drok.missilecommand.upgrades.ShieldMK2;
 import drok.missilecommand.upgrades.Upgrade;
 import drok.missilecommand.utils.Button;
+import drok.missilecommand.utils.ResourceManager;
 import drok.missilecommand.utils.Util;
 import drok.missilecommand.weapons.Probe;
 
@@ -25,27 +28,39 @@ public class ShopState extends State {
 	private Upgrade ware;
 	private List<Button> buttons = new LinkedList<Button>();
 	private Input input;
-	private Button buy;
-	private int money;
+	private Button buy, back;
+	private int money = 0;
 	
 	public ShopState(int state) {
 		super(state);
-		
 	}
 	
+	@Override
+	public void firstTimeEnter() throws SlickException {
+		super.firstTimeEnter();
+		input = container.getInput();
+		buy = new Button(container.getWidth() * 3 / 4 - 100, container.getHeight() * 3 / 4 + 3, 100, 30, "BUY", Color.green, Color.white);
+		back = new Button(10, 10, ResourceManager.getImage("res/graphics/BackButton.png").getWidth(), ResourceManager.getImage("res/graphics/BackButton.png").getHeight(), ResourceManager.getImage("res/graphics/BackButton.png"), 1);
+	}
+
 	@Override
 	public void enter(GameContainer container, StateBasedGame game) throws SlickException {
 		super.enter(container, game);
 		//How mouch money do you have
-		money = 10;
+		money += ((LevelBasedGameState) game.getState(Launch.LEVELGAMESTATE)).getScore();
 		
 		int buttonAmount;
-		input = container.getInput();
-		buy = new Button(container.getWidth() * 3 / 4 - 100, container.getHeight() * 3 / 4 + 3, 100, 30, "BUY", Color.green, Color.white);
+		
+		//Clearing lists
+		buttons.clear();
+		upgrades.clear();
+		bought.clear();
 		
 		//Adding upgrades to the list
-		upgrades.add(new ShieldMK1(3));
-		upgrades.add(new Probe());
+		upgrades.add(new ShieldMK1(container.getWidth() / 2 / 6, container.getHeight() / 2 / 6 + 1, ResourceManager.getImage("res/graphics/Shield.png"), (LevelBasedGameState) game.getState(Launch.LEVELGAMESTATE)));
+		upgrades.add(new Probe(container.getWidth() / 2, container.getHeight() / 2, (LevelBasedGameState) game.getState(Launch.LEVELGAMESTATE)));
+		upgrades.add(new ShieldMK2(container.getWidth() / 2 / 6, container.getHeight() / 2 / 6 + 1, ResourceManager.getImage("res/graphics/Shield.png"), (LevelBasedGameState) game.getState(Launch.LEVELGAMESTATE)));
+		
 		
 		//Adding atleast 10 buttons
 		if(upgrades.size() < 10)
@@ -59,6 +74,8 @@ public class ShopState extends State {
 				buttons.add(new Button(container.getWidth() / 4, container.getHeight() / 4 + i * container.getHeight() / 20, container.getWidth() / 4, container.getHeight() / 20, upgrades.get(i).getName(), new Color(10, 10, 10), Color.white));
 		}
 	}
+	
+	
 
 	@Override
 	public void render(GameContainer container, StateBasedGame game, Graphics g) throws SlickException {
@@ -78,6 +95,7 @@ public class ShopState extends State {
 		g.drawRect(container.getWidth() / 4, container.getHeight() / 4, container.getWidth() / 2, container.getHeight() / 2);
 		font16.drawString(container.getWidth() / 4, container.getHeight() / 4 - font16.getHeight() - 10,"Money: " + money);
 		buy.render(g, font16);
+		back.render(g);
 	}
 
 	@Override
@@ -99,18 +117,15 @@ public class ShopState extends State {
 		for(int i = 0; i < buttons.size(); i++) {
 			if(buttons.get(i).isSelected()) {
 				if(upgrades.size() > 0 && i < upgrades.size() && money >= upgrades.get(i).getPrice()) {
-					//buy.setColor(Color.white);
+					buy.setColor(Color.green);
 					//Buying
 					if(buy.clicked(input.getMouseX(), input.getMouseY(), container)) {
 						if(buy()) {
-							System.out.println(money);
 							int buttonIndex = upgrades.indexOf(ware);
-							buttons.remove(upgrades.indexOf(ware));
+							buttons.remove(buttonIndex);
 							for(int j = 0; j < buttons.size(); j++) {
 								if(j >= buttonIndex)
 									buttons.get(j).setY(buttons.get(j).getY() - buttons.get(j).getHeight());
-								buttons.get(j).setSelected(false);
-								
 							}
 							
 							if(upgrades.size() < 10)
@@ -129,6 +144,14 @@ public class ShopState extends State {
 					break;
 				}
 			}
+		}
+		
+		if(back.hoverOver(input.getMouseX(), input.getMouseY())) {
+			back.changeImage(ResourceManager.getImage("res/graphics/BackButtonHover.png"));
+			if(back.clicked(input.getMouseX(), input.getMouseY(), container))
+				game.enterState(Launch.LEVELSELECTSTATE);
+		} else {
+			back.changeImage(ResourceManager.getImage("res/graphics/BackButton.png"));
 		}
 	}
 	

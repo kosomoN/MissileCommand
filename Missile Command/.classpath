@@ -6,7 +6,7 @@
 	<classpathentry kind="lib" path="/Libraries/lib/jorbis-0.0.15.jar"/>
 	<classpathentry kind="lib" path="/Libraries/lib/lwjgl.jar">
 		<attributes>
-			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="Libraries/lib/natives"/>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="Libraries/lib/native/windows"/>
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="/Libraries/lib/slick.jar">

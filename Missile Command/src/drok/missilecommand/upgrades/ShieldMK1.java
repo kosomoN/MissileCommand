@@ -7,26 +7,21 @@ import drok.missilecommand.states.game.GameState;
 
 public class ShieldMK1 extends Shield {
 	//Fields
-	private static int durability = 3;
 	private Color color = new Color(1, 1, 1, 1f);
 	
-	public ShieldMK1(int centerx, int centery, Image shieldImg) {
-		super(centerx, centery, durability, shieldImg);
-	}
-	
-	public ShieldMK1(int durability) {
-		super(durability);
+	public ShieldMK1(float centerx, float centery, Image shieldImg, GameState gs) {
+		super(centerx, centery, 3, shieldImg, gs);
 	}
 
 	@Override
 	public void render() {
 		if(color.a > 0) {
-			shieldImg.draw(x - shieldImg.getWidth() / 2, y - shieldImg.getHeight() / 2 + 1, color);
+			shieldImg.draw(x - shieldImg.getWidth() / 2, y - shieldImg.getHeight() / 2, color);
 		}
 	}
 	
 	@Override
-	public boolean update(GameState gs) {
+	public boolean update(int delta) {
 		if(isDestroyed())
 			color.a -= 0.02f;
 		return super.update(gs);

@@ -109,10 +109,12 @@ public class GameModeState extends State {
 			if(difficulty.asNumber < 2)
 				difficulty = difficulty.getFromNumber(difficulty.getAsNumber() + 1);
 		} else if(play.clicked(mouseX, mouseY, container)) {
-			if(MenuState.isPlayingArcade())
-				game.enterState(Launch.LEVELGAMESTATE);
-			else
+			
+			if(MenuState.isPlayingArcade()) {
+				((MenuState) game.getState(Launch.MENUSTATE)).fadeMusic(2000);
 				game.enterState(Launch.ENDLESSGAMESTATE);
+			} else
+				game.enterState(Launch.LEVELGAMESTATE);
 		}
 	}
 

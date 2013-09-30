@@ -12,6 +12,7 @@ import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
+import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.StateBasedGame;
 
@@ -20,6 +21,7 @@ import drok.missilecommand.Level;
 import drok.missilecommand.Level.Spawnable;
 import drok.missilecommand.states.State;
 import drok.missilecommand.states.game.LevelBasedGameState;
+import drok.missilecommand.utils.Button;
 import drok.missilecommand.utils.ResourceManager;
 
 public class LevelSelectState extends State {
@@ -27,6 +29,7 @@ public class LevelSelectState extends State {
 	private static final int AREA_WIDTH = 2048, AREA_HEIGHT = 2048;
 	private static final float MAX_ZOOM_OUT = 0.25f;
 	private static Image moonImg, mask;
+	private Button back;
 	private float zoomLevel = 1;
 	private float camPosx, camPosy;
 	private List<Point> stars = new ArrayList<Point>();
@@ -50,6 +53,7 @@ public class LevelSelectState extends State {
 		mask = ResourceManager.getImage("res/graphics/Planet Mask.png");
 		moonImg = ResourceManager.getImage("res/graphics/Moon.png");
 		moonImg = moonImg.getScaledCopy(SCALE / 2);
+		back = new Button(10, 10, ResourceManager.getImage("res/graphics/BackButton.png").getWidth(), ResourceManager.getImage("res/graphics/BackButton.png").getHeight(), ResourceManager.getImage("res/graphics/BackButton.png"), 1);
 		
 		loadPlanets(new File("res/data/planets"));
 		loadLevels(new File("res/data/levels"));
@@ -58,7 +62,7 @@ public class LevelSelectState extends State {
 	private void loadPlanets(File file) {
 		for(File f : file.listFiles()) {
 			if(f.isDirectory())
-				loadLevels(file);
+				loadLevels(f);
 			else if(f.getName().substring(f.getName().lastIndexOf(".")).equals(".misscommplanet")) {
 				FileReader fr = null;
 				try {
@@ -76,7 +80,7 @@ public class LevelSelectState extends State {
 	private void loadLevels(File file) {
 		for(File f : file.listFiles()) {
 			if(f.isDirectory())
-				loadLevels(file);
+				loadLevels(f);
 			else if(f.getName().substring(f.getName().lastIndexOf(".")).equals(".misscommlvl")) {
 				try {
 					Level lvl = new Level(f);
@@ -122,6 +126,8 @@ public class LevelSelectState extends State {
 		}
 		
 		g.resetTransform();
+		
+		back.render(g);
 		
 		int x = container.getInput().getMouseX();
 		int y = container.getInput().getMouseY();
@@ -205,6 +211,16 @@ public class LevelSelectState extends State {
 		
 		if(!hasRenderedMoonInfo)
 			moonInfoTimer = 0;
+		
+		Input input = container.getInput();
+		if(back.hoverOver(input.getMouseX(), input.getMouseY())) {
+			back.changeImage(ResourceManager.getImage("res/graphics/BackButtonHover.png"));
+			if(back.clicked(input.getMouseX(), input.getMouseY(), container)) {
+				game.enterState(Launch.MENUSTATE);
+			}
+		} else {
+			back.changeImage(ResourceManager.getImage("res/graphics/BackButton.png"));
+		}
 	}
 
 	@Override
@@ -245,6 +261,7 @@ public class LevelSelectState extends State {
 					if(x > moon.x - moonImg.getWidth() / 2 && x < moon.x + moonImg.getWidth() / 2 &&
 							y > moon.y - moonImg.getHeight() / 2 && y < moon.y + moonImg.getHeight() / 2) {
 						((LevelBasedGameState) game.getState(Launch.LEVELGAMESTATE)).setLevel(moon.level);
+						((MenuState) game.getState(Launch.MENUSTATE)).fadeMusic(2000);
 						game.enterState(Launch.LEVELGAMESTATE);
 						break;
 					}
@@ -266,14 +283,14 @@ public class LevelSelectState extends State {
 		
 		public LevelSelectPlanet(String name, float x, float y) {
 			try {
-				planetImg = new Image(16, 16);
+				planetImg = new Image("res/graphics/EmptyPlanetTexture.png");
 				planetImg.setFilter(Image.FILTER_NEAREST);
 				planetTexture = ResourceManager.getImage("res/graphics/Planet " + name + " Texture.png");
 			} catch (SlickException e) {
 				e.printStackTrace();
 			}
 			
-			creatImg();
+			createImg();
 			
 			this.name = name;
 			
@@ -302,13 +319,13 @@ public class LevelSelectState extends State {
 				imgPos += 1;
 				if(imgPos >= 32)
 					imgPos = 0;
-				creatImg();
+				createImg();
 
 				timer = 0;
 			}
 		}
 		
-		private void creatImg() {
+		private void createImg() {
 			try {
 				Graphics g = planetImg.getGraphics();
 				g.clear();

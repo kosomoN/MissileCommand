@@ -43,12 +43,12 @@ public class Button {
 	
 	public void render(Graphics g, Font font) {
 		g.setColor(color);
-		g.fillRect(x, y, width, height);
+		g.fillRect(x, y, width * scale, height * scale);
 		g.setColor(Color.white);
-		g.drawRect(x, y, width, height);
+		g.drawRect(x, y, width * scale, height * scale);
 		
 		g.setColor(txtColor);
-		font.drawString(x + (width - font.getWidth(text)) / 2, y + (height - font.getHeight(text)) / 2, text);
+		font.drawString(x + (width * scale - font.getWidth(text)) / 2, y + (height * scale - font.getHeight(text)) / 2, text);
 	}
 	
 	public void render(Graphics g) {

@@ -25,7 +25,7 @@ public class Planet {
 	private boolean isHit;
 	
 	private List<Part> parts = new ArrayList<Part>();
-	private Color green = new Color(8, 57, 12), blue = new Color(2, 23, 82);
+	//private Color green = new Color(8, 57, 12), blue = new Color(2, 23, 82);
 
 	public Planet(int x, int y, String name) {
 		this.x = x;

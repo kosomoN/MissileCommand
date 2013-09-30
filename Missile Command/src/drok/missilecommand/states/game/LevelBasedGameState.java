@@ -14,7 +14,6 @@ import drok.missilecommand.utils.ResourceManager;
 public class LevelBasedGameState extends GameState {
 	
 	private static Image youWinImg;
-	
 	private Level level;
 	
 	public LevelBasedGameState(int state) {
@@ -38,7 +37,7 @@ public class LevelBasedGameState extends GameState {
 		super.restart();
 		missiles = level.getMissileCount();
 		gameOverColor.a = -0.1f;
-		level.restart();
+		//level.restart();
 	}
 
 	@Override
@@ -71,7 +70,6 @@ public class LevelBasedGameState extends GameState {
 	@Override
 	protected void renderScaled(Graphics g) {
 		super.renderScaled(g);
-		
 		if(planet.isHit()) {
 			gameOver.draw((screenImg.getWidth() - gameOver.getWidth()) / 2, (screenImg.getHeight() - gameOver.getHeight()) / 2, gameOverColor);
 		} else if(level.hasWon()) {
@@ -81,5 +79,9 @@ public class LevelBasedGameState extends GameState {
 
 	public void setLevel(Level level) {
 		this.level = level;
+	}
+	
+	public int getScore() {
+		return super.getScore();
 	}
 }

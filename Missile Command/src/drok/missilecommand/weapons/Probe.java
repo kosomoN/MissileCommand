@@ -2,7 +2,6 @@ package drok.missilecommand.weapons;
 
 import java.util.List;
 
-import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 
 import drok.missilecommand.debris.Debris;
@@ -35,7 +34,7 @@ public class Probe implements Weapon, Upgrade {
 		probeImg = ResourceManager.getImage("res/graphics/Probe.png");
 	}
 
-	public void update(int delta) {
+	public boolean update(int delta) {
 		angle += 0.05 * delta;
 		x = (float) (gs.getPlanet().getX() - 30 * Math.cos(Math.toRadians(angle)));
 		y = (float) (gs.getPlanet().getY() + 40 * Math.sin(Math.toRadians(angle)));
@@ -55,9 +54,12 @@ public class Probe implements Weapon, Upgrade {
 				timeSinceFire -= fireRate;
 			}
 		}
+		
+		return false;
 	}
 	
-	public void render(Graphics g) {
+	@Override
+	public void render() {
 		probeImg.drawCentered(x, y);
 	}
 

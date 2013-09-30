@@ -6,19 +6,23 @@ import java.io.File;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
+import org.newdawn.slick.Music;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.TrueTypeFont;
 import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
 
 public abstract class State extends BasicGameState {
-	private int state;
+	public static final int SCALE = 6;
+	
 	protected GameContainer container;
 	protected StateBasedGame game;
-	private boolean firstTime = true;
-	public static final int SCALE = 6;
 	protected static Image screenImg;
 	protected static TrueTypeFont font16, font32;
+	protected Music music;
+	
+	private int state;
+	private boolean firstTime = true;
 	
 	@Override
 	public void init(GameContainer container, StateBasedGame game) throws SlickException {
@@ -56,6 +60,10 @@ public abstract class State extends BasicGameState {
 	    } catch (Exception e) {
 	        e.printStackTrace();
 	    }  
+	}
+	
+	public void changeMusic(Music music) {
+		this.music = music;
 	}
 	
 	public State(int state) {
