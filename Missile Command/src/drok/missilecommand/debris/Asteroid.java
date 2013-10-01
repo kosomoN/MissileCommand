@@ -78,10 +78,20 @@ public class Asteroid extends Debris {
 			}
 			return false;
 		}
+
+		@Override
+		public boolean renderScaled() {
+			return true;
+		}
 	}
 
 	@Override
 	public int getScore() {
 		return 10;
+	}
+
+	@Override
+	public boolean renderScaled() {
+		return true;
 	}
 }

@@ -16,12 +16,14 @@ public abstract class Debris implements Entity {
 	protected Planet planet;
 	private int radiusPlusPlanetRadiusSquared;
 	private Circle boundingCircle;
+	private float hitboxSize;
 	
 	public Debris(float x, float y, float speed, float direction, int circleHitboxRadius, Planet planet) {
 		this.x = x;
 		this.y = y;
 		this.planet = planet;
 		boundingCircle = new Circle(x, y, circleHitboxRadius);
+		this.hitboxSize = circleHitboxRadius;
 		this.radiusPlusPlanetRadiusSquared = (circleHitboxRadius + 8) * (circleHitboxRadius + 8);
 		
 		vector = new Vector2f((float) Math.cos(Math.toRadians(direction)) * speed,
@@ -68,5 +70,9 @@ public abstract class Debris implements Entity {
 		boundingCircle.setCenterX(x);
 		boundingCircle.setCenterY(y);
 		return boundingCircle;
+	}
+
+	public float getHitboxSize() {
+		return hitboxSize;
 	}
 }

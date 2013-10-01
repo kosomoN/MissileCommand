@@ -56,7 +56,7 @@ public class Missile implements Entity {
 			y += dy * delta;
 			
 			for(Debris deb : debris) {
-				if(!deb.isHit() && deb.getX() - 4 < x && deb.getX() + 4 > x && deb.getY() - 4 < y && deb.getY() + 4 > y) {
+				if(!deb.isHit() && deb.getX() - deb.getHitboxSize() < x && deb.getX() + deb.getHitboxSize() > x && deb.getY() - deb.getHitboxSize() < y && deb.getY() + deb.getHitboxSize() > y) {
 					deb.hit(gs);
 					gs.debrisDestroyed(deb);
 					isHit = true;
@@ -67,5 +67,10 @@ public class Missile implements Entity {
 			}
 		}
 		return false;
+	}
+
+	@Override
+	public boolean renderScaled() {
+		return true;
 	}
 }

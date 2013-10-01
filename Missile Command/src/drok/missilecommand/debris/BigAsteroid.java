@@ -46,4 +46,9 @@ public class BigAsteroid extends Debris {
 		gs.addEntity(new Asteroid(x, y, 0.05f, (float) Math.toDegrees(Math.atan2(planet.getY() - y, planet.getX() - x)) + 90, gs.getPlanet()));
 		gs.addEntity(new Asteroid(x, y, 0.05f, (float) Math.toDegrees(Math.atan2(planet.getY() - y, planet.getX() - x)) - 90, gs.getPlanet()));
 	}
+
+	@Override
+	public boolean renderScaled() {
+		return true;
+	}
 }

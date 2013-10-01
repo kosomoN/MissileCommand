@@ -19,8 +19,8 @@ import drok.missilecommand.Planet;
 import drok.missilecommand.debris.Asteroid;
 import drok.missilecommand.debris.BigAsteroid;
 import drok.missilecommand.debris.Debris;
+import drok.missilecommand.debris.HeavyFighter;
 import drok.missilecommand.states.State;
-import drok.missilecommand.states.menu.MenuState;
 import drok.missilecommand.upgrades.Upgrade;
 import drok.missilecommand.utils.ResourceManager;
 import drok.missilecommand.weapons.Probe;
@@ -69,6 +69,7 @@ public abstract class GameState extends State {
 		BigAsteroid.init();
 		Turret.init();
 		Probe.init();
+		HeavyFighter.init();
 		
 		turret = new Turret(planet, 5);
 	}
@@ -91,6 +92,10 @@ public abstract class GameState extends State {
 	@Override
 	public void render(GameContainer container, StateBasedGame game, Graphics g) throws SlickException {
 		super.render(container, game, g);
+		for(Entity ent : entities) {
+			if(!ent.renderScaled())
+				ent.render(g);
+		}
 		g.setFont(font16);
 		g.setColor(Color.white);
 		g.drawString("FPS: " + container.getFPS(), 10, 10);
@@ -107,7 +112,8 @@ public abstract class GameState extends State {
 		}
 		
 		for(Entity ent : entities) {
-			ent.render(g);
+			if(ent.renderScaled())
+				ent.render(g);
 		}
 		
 		if(upgrades.size() > 0)
@@ -142,13 +148,13 @@ public abstract class GameState extends State {
 				}
 			}
 			
-			if(upgrades.size() > 0)
+			if(upgrades.size() > 0) {
 				for(Iterator<Upgrade> it = upgrades.iterator(); it.hasNext();) {
 					Upgrade up = it.next();
 					if(up.update(delta))
 						upgrades.remove(up);
 				}
-						
+			}
 			
 			if(planet.isHit()) {
 				if(gameOverColor.a < 2) {
@@ -165,12 +171,9 @@ public abstract class GameState extends State {
 	public void mousePressed(int button, int x, int y) {
 		super.mousePressed(button, x, y);
 
-		if(gameOverColor.a > 0.7) {
-			if(MenuState.isPlayingArcade())
-				game.enterState(Launch.ENDLESSGAMESTATE);
-			else
-				game.enterState(Launch.SHOPSTATE);
-		}else if(missiles > 0 && !planet.isHit()) {
+		if(gameOverColor.a > 0.7)
+			game.enterState(Launch.LEVELSELECTSTATE);
+		else if(missiles > 0 && !planet.isHit()) {
 			missiles--;
 			turret.fire(this, x / SCALE, y / SCALE);
 		}
@@ -180,15 +183,14 @@ public abstract class GameState extends State {
 	public void keyPressed(int key, char c) {
 		super.keyPressed(key, c);
 		if(key == Input.KEY_ESCAPE)
-			//game.enterState(Launch.MENUSTATE);
-			pause();
+			game.enterState(Launch.MENUSTATE);//pause();
 	}
-	
+	/*
 	private void pause() {
 		paused = !paused;
 		pauseColor.a = 1;
 		pauseColorTimer = 0;
-	}
+	}*/
 
 	public void addEntity(Entity ent) {
 		newEntities.add(ent);
@@ -229,7 +231,7 @@ public abstract class GameState extends State {
 	public int getScore() {
 		return score;
 	}
-	
+
 	public List<Debris> getDebris() {
 		return debris;
 	}

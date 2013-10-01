@@ -12,8 +12,8 @@ import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
-import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
+import org.newdawn.slick.Sound;
 import org.newdawn.slick.state.StateBasedGame;
 
 import drok.missilecommand.Launch;
@@ -32,12 +32,15 @@ public class LevelSelectState extends State {
 	private Button back;
 	private float zoomLevel = 1;
 	private float camPosx, camPosy;
+	private float initialCamX, initialCamY, goToX, goToY, initialZoom, camT;
+	private boolean isMovingCam;
 	private List<Point> stars = new ArrayList<Point>();
 	private List<LevelSelectPlanet> planets = new ArrayList<LevelSelectPlanet>();
 	private float moonInfoTimer;
 	private boolean hasRenderedMoonInfo;
+	private Sound beepSound;
+	private boolean doneRenderingInfo;
 
-	
 	public LevelSelectState(int state) {
 		super(state);
 	}
@@ -54,6 +57,8 @@ public class LevelSelectState extends State {
 		moonImg = ResourceManager.getImage("res/graphics/Moon.png");
 		moonImg = moonImg.getScaledCopy(SCALE / 2);
 		back = new Button(10, 10, ResourceManager.getImage("res/graphics/BackButton.png").getWidth(), ResourceManager.getImage("res/graphics/BackButton.png").getHeight(), ResourceManager.getImage("res/graphics/BackButton.png"), 1);
+		
+		beepSound = new Sound("res/audio/Beep.ogg");
 		
 		loadPlanets(new File("res/data/planets"));
 		loadLevels(new File("res/data/levels"));
@@ -118,12 +123,15 @@ public class LevelSelectState extends State {
 		g.scale(zoomLevel, zoomLevel);
 		g.translate(-camPosx + container.getWidth() / 2 / zoomLevel, -camPosy + container.getHeight() / 2 / zoomLevel);
 		super.render(container, game, g);
+		
 		for(LevelSelectPlanet planet : planets)
 			planet.render();
 		
 		for(Point p : stars) {
 			g.fillRect(p.x, p.y, 4, 4);
 		}
+
+
 		
 		g.resetTransform();
 		
@@ -157,23 +165,45 @@ public class LevelSelectState extends State {
 	
 	private void renderMoonInfo(int x, int y, Moon moon, Graphics g) {
 		hasRenderedMoonInfo = true;
+		doneRenderingInfo = true;
 		g.setColor(Color.white);
-		int textY = y + 30;
-		String str = "Name: " + moon.name;
-		g.drawString(moonInfoTimer - ((textY - y) / 15) < 0 ? "" : (moonInfoTimer - ((textY - y) / 15) < str.length() ? str.substring(0, (int) moonInfoTimer - ((textY - y) / 15)) + (char)(Math.random() * 26 + 'a') : str), x + 15, textY);
+		x += 15;
+		int textY = y + 30; 
+		renderMoonInfoLine(g, x, textY, y, "Name: " + moon.name);
+		
+		String str;
 		for(Spawnable sp : moon.level.getSpawnables()) {
 			textY += 30;
 			str = sp.getAmount() + " " + sp.getSpawnTypeName() + (sp.getAmount() > 1 ? "'s" : "");
-			g.drawString(moonInfoTimer - ((textY - y) / 15) < 0 ? "" : (moonInfoTimer - ((textY - y) / 15) < str.length() ? str.substring(0, (int) moonInfoTimer - ((textY - y) / 15)) + (char)(Math.random() * 26 + 'a') : str), x + 15, textY);
+			renderMoonInfoLine(g, x, textY, y, str);
 		}
+		
 		textY += 30;
-		str = "Missiles: " + moon.level.getMissileCount();
-		g.drawString(moonInfoTimer - ((textY - y) / 15) < 0 ? "" : (moonInfoTimer - ((textY - y) / 15) < str.length() ? str.substring(0, (int) moonInfoTimer - ((textY - y) / 15)) + (char)(Math.random() * 26 + 'a') : str), x + 15, textY);
+		renderMoonInfoLine(g, x, textY, y, "Missiles: " + moon.level.getMissileCount());
+		
 		textY += 30;
 		str = "Rate: " + (1000d / moon.level.getSpawnTime()) + "/s";
-		g.drawString(moonInfoTimer - ((textY - y) / 15) < 0 ? "" : (moonInfoTimer - ((textY - y) / 15) < str.length() ? str.substring(0, (int) moonInfoTimer - ((textY - y) / 15)) + (char)(Math.random() * 26 + 'a') : str), x + 15, textY);
+		renderMoonInfoLine(g, x, textY, y, str);
 		
-		//moonInfoTimer < str.length() ? str.substring(0, (int) moonInfoTimer) + (char)(Math.random() * 26 + 'a') : str
+		if(!doneRenderingInfo && moonInfoTimer % 1 < 0.2)
+			beepSound.play();
+	}
+	
+	private void renderMoonInfoLine(Graphics g, int x, int textY, int y, String str) {
+		if(moonInfoTimer - ((textY - y) / 15) >= 0 ) {
+			if((moonInfoTimer - ((textY - y) / 15) < str.length())) {
+				g.drawString(str.substring(0, (int) moonInfoTimer - ((textY - y) / 15)) + (char)(Math.random() * 26 + 'a'), x, textY);
+				doneRenderingInfo = false;
+			} else
+				g.drawString(str, x, textY);
+			
+			
+		}
+	}
+	
+	private float cosInterpolation(float x1, float x2, float t) {
+	   double t2 = (1 - Math.cos(t * Math.PI)) / 2;
+	   return (float) (x1 * (1 - t2) + x2 * t2);
 	}
 
 	@Override
@@ -209,26 +239,35 @@ public class LevelSelectState extends State {
 			planet.update();
 		moonInfoTimer += 0.2f;
 		
-		if(!hasRenderedMoonInfo)
+		if(!hasRenderedMoonInfo) {
 			moonInfoTimer = 0;
+			doneRenderingInfo = false;
+		}
 		
-		Input input = container.getInput();
-		if(back.hoverOver(input.getMouseX(), input.getMouseY())) {
-			back.changeImage(ResourceManager.getImage("res/graphics/BackButtonHover.png"));
-			if(back.clicked(input.getMouseX(), input.getMouseY(), container)) {
-				game.enterState(Launch.MENUSTATE);
+		if(isMovingCam) {
+			if(camT + 0.01 < 1) {
+				camT += 0.01;
+				camPosx = cosInterpolation(initialCamX, goToX, camT);
+				camPosy = cosInterpolation(initialCamY, goToY, camT);
+				zoomLevel = cosInterpolation(initialZoom, 1, camT);
+			} else {
+				camT = 0;
+				camPosx = goToX;
+				camPosy = goToY;
+				zoomLevel = 1;
+				isMovingCam = false;
 			}
-		} else {
-			back.changeImage(ResourceManager.getImage("res/graphics/BackButton.png"));
 		}
 	}
 
 	@Override
 	public void mouseDragged(int oldx, int oldy, int newx, int newy) {
 		super.mouseDragged(oldx, oldy, newx, newy);
-		camPosx += (oldx - newx) / zoomLevel;
-		camPosy += (oldy - newy) / zoomLevel;
-		clampCamPos();
+		if(!isMovingCam) {
+			camPosx += (oldx - newx) / zoomLevel;
+			camPosy += (oldy - newy) / zoomLevel;
+			clampCamPos();
+		}
 	}
 	
 	private void clampCamPos() {
@@ -245,9 +284,9 @@ public class LevelSelectState extends State {
 	
 	
 	@Override
-	public void mousePressed(int button, int x, int y) {
-		super.mousePressed(button, x, y);
-
+	public void mouseClicked(int button, int x, int y, int clickCount) {
+		super.mouseClicked(button, x, y, clickCount);
+		
 		x /= zoomLevel;
 		y /= zoomLevel;
 		
@@ -255,13 +294,20 @@ public class LevelSelectState extends State {
 		y += camPosy - container.getHeight() / 2 / zoomLevel;
 		for(LevelSelectPlanet p : planets) {
 			if(x > p.x - 64 && x < p.x + 64 && y > p.y - 64 && y < p.y + 64) { //8 * 8
+				if(!isMovingCam) {
+					initialZoom = zoomLevel;
+					goToX = p.x;
+					goToY = p.y;
+					initialCamX = camPosx;
+					initialCamY = camPosy;
+					isMovingCam = true;
+				}
 				break;
 			} else {
 				for(Moon moon : p.moons) {
 					if(x > moon.x - moonImg.getWidth() / 2 && x < moon.x + moonImg.getWidth() / 2 &&
 							y > moon.y - moonImg.getHeight() / 2 && y < moon.y + moonImg.getHeight() / 2) {
 						((LevelBasedGameState) game.getState(Launch.LEVELGAMESTATE)).setLevel(moon.level);
-						((MenuState) game.getState(Launch.MENUSTATE)).fadeMusic(2000);
 						game.enterState(Launch.LEVELGAMESTATE);
 						break;
 					}
@@ -269,13 +315,19 @@ public class LevelSelectState extends State {
 			}
 		}
 	}
+
+	@Override
+	public void mouseReleased(int button, int x, int y) {
+		super.mousePressed(button, x, y);
+
+	}
 	
 	
 
 	private class LevelSelectPlanet {
 		private List<Moon> moons = new ArrayList<Moon>();
 		public float x, y;
-		private int timer;
+		private int timer = (int) (Math.random() * 50);
 		private int imgPos;
 		private Image planetImg;
 		private Image planetTexture;
@@ -283,7 +335,7 @@ public class LevelSelectState extends State {
 		
 		public LevelSelectPlanet(String name, float x, float y) {
 			try {
-				planetImg = new Image("res/graphics/EmptyPlanetTexture.png");
+				planetImg = new Image(16, 16);
 				planetImg.setFilter(Image.FILTER_NEAREST);
 				planetTexture = ResourceManager.getImage("res/graphics/Planet " + name + " Texture.png");
 			} catch (SlickException e) {
@@ -304,7 +356,6 @@ public class LevelSelectState extends State {
 
 		public void render() {
 			planetImg.draw(x - planetImg.getWidth() * SCALE / 2, y - planetImg.getHeight() * SCALE / 2, SCALE);
-			container.getGraphics().setColor(Color.gray);
 			for(Moon moon : moons) {
 				moon.render();
 			}
@@ -374,14 +425,13 @@ public class LevelSelectState extends State {
 				angle += rotSpeed;
 				x = (float) (planet.x - circleRadius * Math.cos(Math.toRadians(angle)));
 				y = (float) (planet.y + circleRadius * Math.sin(Math.toRadians(angle)));
-			} else {
-				stop = false;
 			}
 		}
 		
 		private void render() {
-			//container.getGraphics().drawOval(planet.x - circleRadius, planet.y - circleRadius, circleRadius * 2, circleRadius * 2);
-			moonImg.draw(x - moonImg.getWidth() / 2, y - moonImg.getHeight() / 2, Color.darkGray);
+			moonImg.draw(x - moonImg.getWidth() / 2, y - moonImg.getHeight() / 2, new Color(0.3f, 0.3f, 0.3f, zoomLevel));
+			if(stop)
+				stop = false;
 		}
 	}
 }

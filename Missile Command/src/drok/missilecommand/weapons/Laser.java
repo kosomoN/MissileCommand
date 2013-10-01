@@ -26,7 +26,7 @@ public class Laser implements Entity {
 		Line laserLine = new Line(startPosx, startPosy, endPosx, endPosy);
 		
 		for(Debris deb : gs.getDebris()) {
-			if(laserLine.intersects(deb.getBoundingCircle())) {
+			if(!deb.isHit() && laserLine.intersects(deb.getBoundingCircle())) {
 				gs.debrisDestroyed(deb);
 				deb.hit(gs);
 			}
@@ -50,5 +50,10 @@ public class Laser implements Entity {
 		
 		color.a = 1f - (timer / 500f) * (timer / 500f);
 		return false;
+	}
+
+	@Override
+	public boolean renderScaled() {
+		return true;
 	}
 }
