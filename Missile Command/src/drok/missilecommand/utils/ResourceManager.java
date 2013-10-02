@@ -24,13 +24,17 @@ public class ResourceManager {
 				loadFiles(f);
 			else {
 				if(f.getName().substring(f.getName().lastIndexOf(".")).equals(".png")) {
-					String path = f.getPath().replaceAll("\\\\", "/");
-					imgs.put(path, new Image(path));
-					imgs.get(path).setFilter(Image.FILTER_NEAREST);
+					if(!imgs.containsKey(f.getName())) {
+						String path = f.getPath().replaceAll("\\\\", "/");
+						Image img = new Image(path);
+						img.setFilter(Image.FILTER_NEAREST);
+						imgs.put(f.getName(), img);
+					} else {
+						throw new RuntimeException("Duplicate image names: " + f.getName());
+					}
 				}
 			}
 		}
-		
 	}
 
 	public static Image getImage(String string) {

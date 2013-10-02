@@ -20,7 +20,7 @@ public class Asteroid extends Debris {
 	}
 
 	public static void init() throws SlickException {
-		asteroidImage = ResourceManager.getImage("res/graphics/Asteroid.png");
+		asteroidImage = ResourceManager.getImage("Asteroid.png");
 	}
 	
 	@Override

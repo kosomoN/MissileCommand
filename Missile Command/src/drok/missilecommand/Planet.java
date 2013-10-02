@@ -30,14 +30,14 @@ public class Planet {
 		this.x = x;
 		this.y = y;
 		
-		planetTexture = ResourceManager.getImage("res/graphics/Planet " + name + " Texture.png");
+		planetTexture = ResourceManager.getImage("Planet " + name + " Texture.png");
 	}
 	
 	public static void init() throws SlickException {
 		planet = new Image(16, 16);
 		planet.setFilter(Image.FILTER_NEAREST);
 		
-		mask = ResourceManager.getImage("res/graphics/Planet Mask.png");
+		mask = ResourceManager.getImage("Planet Mask.png");
 	}
 	
 	public void render(Graphics g) {

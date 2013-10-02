@@ -31,7 +31,7 @@ public class Probe implements Weapon, Upgrade {
 	}
 	
 	public static void init() {
-		probeImg = ResourceManager.getImage("res/graphics/Probe.png");
+		probeImg = ResourceManager.getImage("Probe.png");
 	}
 
 	public boolean update(int delta) {

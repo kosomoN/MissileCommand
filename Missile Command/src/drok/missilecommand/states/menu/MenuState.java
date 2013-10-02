@@ -41,16 +41,16 @@ public class MenuState extends State {
 	@Override
 	public void firstTimeEnter() throws SlickException {
 		super.firstTimeEnter();
-		Image img = ResourceManager.getImage("res/graphics/UnMute.png");
+		Image img = ResourceManager.getImage("UnMute.png");
 		
 		ignoreClick = false;
 		music = new Music("res/audio/music_space.ogg", true);
 		muteMusic = new Button(container.getWidth() - img.getWidth() - 10, 10, img.getWidth(), img.getHeight(), img, 1);
-		img = ResourceManager.getImage("res/graphics/UnMuteSound.png");
+		img = ResourceManager.getImage("UnMuteSound.png");
 		muteSound = new Button(container.getWidth() - 2 * img.getWidth() - 2 * 10, 10, img.getWidth(), img.getHeight(), img, 1);
 		
-		arrow = ResourceManager.getImage("res/graphics/Arrow.png");
-		background = ResourceManager.getImage("res/graphics/Background.png");
+		arrow = ResourceManager.getImage("Arrow.png");
+		background = ResourceManager.getImage("Background.png");
 		background = background.getScaledCopy((float) container.getHeight() / background.getHeight());
 	}
 
@@ -89,7 +89,7 @@ public class MenuState extends State {
 		} else if(arcade.hoverOver(input.getMouseX(), input.getMouseY())) {
 			selecty = arcade.getY() + arcade.getHeight() / 4;
 			if(!ignoreClick && arcade.clicked(input.getMouseX(), input.getMouseY(), container)) {
-				//fadeMusic(2000);
+				//music.fade(2000, 0, true);
 				playArcade = true;
 				game.enterState(Launch.GAMEMODESTATE);
 			}
@@ -103,21 +103,21 @@ public class MenuState extends State {
 				container.exit();
 		} else if(muteMusic.hoverOver(input.getMouseX(), input.getMouseY())) {
 			if(muteMusic.clicked(input.getMouseX(), input.getMouseY(), container)) {
-				if(muteMusic.getImage().equals(ResourceManager.getImage("res/graphics/Mute.png"))) {
-					muteMusic.changeImage(ResourceManager.getImage("res/graphics/UnMute.png"));
+				if(muteMusic.getImage().equals(ResourceManager.getImage("Mute.png"))) {
+					muteMusic.changeImage(ResourceManager.getImage("UnMute.png"));
 					container.setMusicOn(true);
 				} else {
-					muteMusic.changeImage(ResourceManager.getImage("res/graphics/Mute.png"));
+					muteMusic.changeImage(ResourceManager.getImage("Mute.png"));
 					container.setMusicOn(false);
 				}
 			}
 		} else if(muteSound.hoverOver(input.getMouseX(), input.getMouseY())) {
 			if(muteSound.clicked(input.getMouseX(), input.getMouseY(), container)) {
-				if(muteSound.getImage().equals(ResourceManager.getImage("res/graphics/MuteSound.png"))) {
-					muteSound.changeImage(ResourceManager.getImage("res/graphics/UnMuteSound.png"));
+				if(muteSound.getImage().equals(ResourceManager.getImage("MuteSound.png"))) {
+					muteSound.changeImage(ResourceManager.getImage("UnMuteSound.png"));
 					container.setSoundOn(true);
 				} else {
-					muteSound.changeImage(ResourceManager.getImage("res/graphics/MuteSound.png"));
+					muteSound.changeImage(ResourceManager.getImage("MuteSound.png"));
 					container.setSoundOn(false);
 				}
 			}
@@ -134,8 +134,8 @@ public class MenuState extends State {
 	public static boolean isPlayingArcade() {
 		return playArcade;
 	}
-	
-	public void fadeMusic(int duration) {
-		music.fade(duration, 0, true);
+
+	public Music getMusic() {
+		return music;
 	}
 }

@@ -29,7 +29,7 @@ public class LevelBasedGameState extends GameState {
 	@Override
 	public void firstTimeEnter() throws SlickException {
 		super.firstTimeEnter();
-		youWinImg = ResourceManager.getImage("res/graphics/You Win.png");
+		youWinImg = ResourceManager.getImage("You Win.png");
 	}
 
 	@Override

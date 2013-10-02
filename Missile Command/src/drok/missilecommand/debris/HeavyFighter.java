@@ -40,6 +40,6 @@ public class HeavyFighter extends Debris {
 	}
 	
 	public static void init() {
-		fighterImg = ResourceManager.getImage("res/graphics/Heavy Fighter.png").getScaledCopy(2);
+		fighterImg = ResourceManager.getImage("Heavy Fighter.png").getScaledCopy(2);
 	}
 }

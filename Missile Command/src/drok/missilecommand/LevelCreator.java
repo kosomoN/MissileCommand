@@ -39,7 +39,9 @@ public class LevelCreator extends JFrame {
 		null,
 		options,
 		options[1]);
-		if(answer == 0) {
+		if(answer == JOptionPane.CLOSED_OPTION) {
+			System.exit(0);
+		} else if(answer == 0) {
 			add(getPlanetPanel());
 		} else {
 			add(getLevelPanel());

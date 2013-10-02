@@ -57,9 +57,9 @@ public class ShopState extends State {
 		bought.clear();
 		
 		//Adding upgrades to the list
-		upgrades.add(new ShieldMK1(container.getWidth() / 2 / 6, container.getHeight() / 2 / 6 + 1, ResourceManager.getImage("res/graphics/Shield.png"), (LevelBasedGameState) game.getState(Launch.LEVELGAMESTATE)));
+		upgrades.add(new ShieldMK1(container.getWidth() / 2 / 6, container.getHeight() / 2 / 6 + 1, ResourceManager.getImage("Shield.png"), (LevelBasedGameState) game.getState(Launch.LEVELGAMESTATE)));
 		upgrades.add(new Probe(container.getWidth() / 2, container.getHeight() / 2, (LevelBasedGameState) game.getState(Launch.LEVELGAMESTATE)));
-		upgrades.add(new ShieldMK2(container.getWidth() / 2 / 6, container.getHeight() / 2 / 6 + 1, ResourceManager.getImage("res/graphics/Shield.png"), (LevelBasedGameState) game.getState(Launch.LEVELGAMESTATE)));
+		upgrades.add(new ShieldMK2(container.getWidth() / 2 / 6, container.getHeight() / 2 / 6 + 1, ResourceManager.getImage("Shield.png"), (LevelBasedGameState) game.getState(Launch.LEVELGAMESTATE)));
 		
 		
 		//Adding atleast 10 buttons
@@ -147,11 +147,11 @@ public class ShopState extends State {
 		}
 		
 		if(back.hoverOver(input.getMouseX(), input.getMouseY())) {
-			back.changeImage(ResourceManager.getImage("res/graphics/BackButtonHover.png"));
+			back.changeImage(ResourceManager.getImage("BackButtonHover.png"));
 			if(back.clicked(input.getMouseX(), input.getMouseY(), container))
 				game.enterState(Launch.LEVELSELECTSTATE);
 		} else {
-			back.changeImage(ResourceManager.getImage("res/graphics/BackButton.png"));
+			back.changeImage(ResourceManager.getImage("BackButton.png"));
 		}
 	}
 	

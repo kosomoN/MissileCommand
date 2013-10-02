@@ -60,7 +60,7 @@ public class GameModeState extends State {
 	@Override
 	public void firstTimeEnter() throws SlickException {
 		super.firstTimeEnter();
-		GUISheet = ResourceManager.getImage("res/graphics/GUIsheet.png");
+		GUISheet = ResourceManager.getImage("GUIsheet.png");
 		
 		leftArrow = new Button(container.getWidth() / 2 - 22 - 50 , container.getHeight() * 2 / 3, 11, 11, GUISheet.getSubImage(26, 0, 11, 11), arrowScale);
 		rightArrow = new Button(container.getWidth() / 2 + 50 , container.getHeight() * 2 / 3, 11, 11, GUISheet.getSubImage(37, 0, 11, 11), arrowScale);
@@ -111,7 +111,7 @@ public class GameModeState extends State {
 		} else if(play.clicked(mouseX, mouseY, container)) {
 			
 			if(MenuState.isPlayingArcade()) {
-				((MenuState) game.getState(Launch.MENUSTATE)).fadeMusic(2000);
+				((MenuState) game.getState(Launch.MENUSTATE)).getMusic().fade(2000, 0, true);
 				game.enterState(Launch.ENDLESSGAMESTATE);
 			} else
 				game.enterState(Launch.LEVELGAMESTATE);

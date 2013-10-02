@@ -53,10 +53,10 @@ public class LevelSelectState extends State {
 								(int) (Math.random() *(AREA_HEIGHT + container.getHeight() / MAX_ZOOM_OUT) -  + container.getHeight() / 2 / MAX_ZOOM_OUT));
 			stars.add(p);
 		}
-		mask = ResourceManager.getImage("res/graphics/Planet Mask.png");
-		moonImg = ResourceManager.getImage("res/graphics/Moon.png");
+		mask = ResourceManager.getImage("Planet Mask.png");
+		moonImg = ResourceManager.getImage("Moon.png");
 		moonImg = moonImg.getScaledCopy(SCALE / 2);
-		back = new Button(10, 10, ResourceManager.getImage("res/graphics/BackButton.png").getWidth(), ResourceManager.getImage("res/graphics/BackButton.png").getHeight(), ResourceManager.getImage("res/graphics/BackButton.png"), 1);
+		back = new Button(10, 10, ResourceManager.getImage("BackButton.png").getWidth(), ResourceManager.getImage("BackButton.png").getHeight(), ResourceManager.getImage("BackButton.png"), 1);
 		
 		beepSound = new Sound("res/audio/Beep.ogg");
 		
@@ -116,6 +116,11 @@ public class LevelSelectState extends State {
 			for(Moon m : p.moons)
 				m.level.restart();
 		}
+	}
+
+	@Override
+	protected void renderScaled(Graphics g) {
+		super.renderScaled(g);
 	}
 
 	@Override
@@ -184,9 +189,6 @@ public class LevelSelectState extends State {
 		textY += 30;
 		str = "Rate: " + (1000d / moon.level.getSpawnTime()) + "/s";
 		renderMoonInfoLine(g, x, textY, y, str);
-		
-		if(!doneRenderingInfo && moonInfoTimer % 1 < 0.2)
-			beepSound.play();
 	}
 	
 	private void renderMoonInfoLine(Graphics g, int x, int textY, int y, String str) {
@@ -238,6 +240,8 @@ public class LevelSelectState extends State {
 		for(LevelSelectPlanet planet : planets)
 			planet.update();
 		moonInfoTimer += 0.2f;
+		if(!doneRenderingInfo && moonInfoTimer % 1 < 0.2)
+			beepSound.play();
 		
 		if(!hasRenderedMoonInfo) {
 			moonInfoTimer = 0;
@@ -316,14 +320,6 @@ public class LevelSelectState extends State {
 		}
 	}
 
-	@Override
-	public void mouseReleased(int button, int x, int y) {
-		super.mousePressed(button, x, y);
-
-	}
-	
-	
-
 	private class LevelSelectPlanet {
 		private List<Moon> moons = new ArrayList<Moon>();
 		public float x, y;
@@ -337,7 +333,7 @@ public class LevelSelectState extends State {
 			try {
 				planetImg = new Image(16, 16);
 				planetImg.setFilter(Image.FILTER_NEAREST);
-				planetTexture = ResourceManager.getImage("res/graphics/Planet " + name + " Texture.png");
+				planetTexture = ResourceManager.getImage("Planet " + name + " Texture.png");
 			} catch (SlickException e) {
 				e.printStackTrace();
 			}

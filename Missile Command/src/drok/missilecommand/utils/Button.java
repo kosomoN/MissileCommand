@@ -58,9 +58,9 @@ public class Button {
 	public void update(float x, float y, GameContainer container) {
 		clicked(x, y, container);
 		if(selected) {
-			changeImage(ResourceManager.getImage("res/graphics/GUIsheet.png").getSubImage(37, 17, 10, 10));
+			changeImage(ResourceManager.getImage("GUIsheet.png").getSubImage(37, 17, 10, 10));
 		} else {
-			changeImage(ResourceManager.getImage("res/graphics/GUIsheet.png").getSubImage(27, 17, 10, 10));
+			changeImage(ResourceManager.getImage("GUIsheet.png").getSubImage(27, 17, 10, 10));
 		}
 	}
 	

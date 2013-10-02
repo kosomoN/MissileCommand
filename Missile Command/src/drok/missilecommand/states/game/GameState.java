@@ -61,8 +61,8 @@ public abstract class GameState extends State {
 			stars.add(p);
 		}
 
-		gameOver = ResourceManager.getImage("res/graphics/Game Over.png");
-		pauseImg = ResourceManager.getImage("res/graphics/Paused.png");
+		gameOver = ResourceManager.getImage("Game Over.png");
+		pauseImg = ResourceManager.getImage("Paused.png");
 		
 		Asteroid.init();
 		Planet.init();

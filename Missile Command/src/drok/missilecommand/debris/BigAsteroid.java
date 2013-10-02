@@ -36,7 +36,7 @@ public class BigAsteroid extends Debris {
 	}
 	
 	public static void init() throws SlickException {
-		img = ResourceManager.getImage("res/graphics/Big Asteroid.png");
+		img = ResourceManager.getImage("Big Asteroid.png");
 		img.setFilter(Image.FILTER_NEAREST);
 	}
 	
