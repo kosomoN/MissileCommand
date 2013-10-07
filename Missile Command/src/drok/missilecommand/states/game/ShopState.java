@@ -19,6 +19,7 @@ import drok.missilecommand.upgrades.Upgrade;
 import drok.missilecommand.utils.Button;
 import drok.missilecommand.utils.ResourceManager;
 import drok.missilecommand.utils.Util;
+import drok.missilecommand.weapons.Nuke;
 import drok.missilecommand.weapons.Probe;
 
 public class ShopState extends State {
@@ -40,7 +41,7 @@ public class ShopState extends State {
 		super.firstTimeEnter();
 		input = container.getInput();
 		buy = new Button(container.getWidth() * 3 / 4 - 100, container.getHeight() * 3 / 4 + 3, 100, 30, "BUY", Color.green, Color.white);
-		back = new Button(10, 10, ResourceManager.getImage("res/graphics/BackButton.png").getWidth(), ResourceManager.getImage("res/graphics/BackButton.png").getHeight(), ResourceManager.getImage("res/graphics/BackButton.png"), 1);
+		back = new Button(10, 10, ResourceManager.getImage("BackButton.png").getWidth(), ResourceManager.getImage("BackButton.png").getHeight(), ResourceManager.getImage("BackButton.png"), 1);
 	}
 
 	@Override
@@ -57,10 +58,10 @@ public class ShopState extends State {
 		bought.clear();
 		
 		//Adding upgrades to the list
-		upgrades.add(new ShieldMK1(container.getWidth() / 2 / 6, container.getHeight() / 2 / 6 + 1, ResourceManager.getImage("Shield.png"), (LevelBasedGameState) game.getState(Launch.LEVELGAMESTATE)));
+		upgrades.add(new ShieldMK1(((LevelBasedGameState) game.getState(Launch.LEVELGAMESTATE)).getPlanet(), ResourceManager.getImage("Shield.png"), (LevelBasedGameState) game.getState(Launch.LEVELGAMESTATE)));
+		upgrades.add(new ShieldMK2(((LevelBasedGameState) game.getState(Launch.LEVELGAMESTATE)).getPlanet(), ResourceManager.getImage("Shield.png"), (LevelBasedGameState) game.getState(Launch.LEVELGAMESTATE)));
 		upgrades.add(new Probe(container.getWidth() / 2, container.getHeight() / 2, (LevelBasedGameState) game.getState(Launch.LEVELGAMESTATE)));
-		upgrades.add(new ShieldMK2(container.getWidth() / 2 / 6, container.getHeight() / 2 / 6 + 1, ResourceManager.getImage("Shield.png"), (LevelBasedGameState) game.getState(Launch.LEVELGAMESTATE)));
-		
+		upgrades.add(new Nuke(((LevelBasedGameState) game.getState(Launch.LEVELGAMESTATE)).getPlanet(), container, (LevelBasedGameState) game.getState(Launch.LEVELGAMESTATE)));
 		
 		//Adding atleast 10 buttons
 		if(upgrades.size() < 10)
@@ -105,7 +106,7 @@ public class ShopState extends State {
 			btn.setColor(new Color(10, 10, 10));
 			if(btn.hoverOver(input.getMouseX(), input.getMouseY())) {
 				btn.setColor(new Color(1f, 1f, 1f, 0.5f));
-				if(btn.clicked(input.getMouseX(), input.getMouseY(), container)) {
+				if(btn.clicked(container)) {
 					for(int j = 0; j < buttons.size(); j++) {
 						buttons.get(j).setSelected(false);
 					}
@@ -119,7 +120,7 @@ public class ShopState extends State {
 				if(upgrades.size() > 0 && i < upgrades.size() && money >= upgrades.get(i).getPrice()) {
 					buy.setColor(Color.green);
 					//Buying
-					if(buy.clicked(input.getMouseX(), input.getMouseY(), container)) {
+					if(buy.clicked(container)) {
 						if(buy()) {
 							int buttonIndex = upgrades.indexOf(ware);
 							buttons.remove(buttonIndex);
@@ -148,7 +149,7 @@ public class ShopState extends State {
 		
 		if(back.hoverOver(input.getMouseX(), input.getMouseY())) {
 			back.changeImage(ResourceManager.getImage("BackButtonHover.png"));
-			if(back.clicked(input.getMouseX(), input.getMouseY(), container))
+			if(back.clicked(container))
 				game.enterState(Launch.LEVELSELECTSTATE);
 		} else {
 			back.changeImage(ResourceManager.getImage("BackButton.png"));

@@ -2,8 +2,10 @@ package drok.missilecommand.upgrades;
 
 import java.util.Iterator;
 
+import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 
+import drok.missilecommand.Planet;
 import drok.missilecommand.debris.Debris;
 import drok.missilecommand.states.game.GameState;
 
@@ -15,16 +17,16 @@ public abstract class Shield implements Upgrade {
 	protected int durability;
 	protected GameState gs;
 	
-	public Shield(float x, float y, int durability, Image img, GameState gs) {
-		this.x = x;
-		this.y = y;
+	public Shield(Planet planet, int durability, Image img, GameState gs) {
+		this.x = planet.getX();
+		this.y = planet.getY();
 		this.durability = durability;
 		this.gs = gs;
 		shieldImg = img;
 		isDestroyed = false;
 	}
 	
-	public abstract void render();
+	public abstract void render(Graphics g);
 	
 	public boolean update(GameState gs) {
 		for(Iterator<Debris> debris = gs.getDebris().iterator(); debris.hasNext();) {

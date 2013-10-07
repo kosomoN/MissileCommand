@@ -126,6 +126,10 @@ public class Planet {
 		}
 	}	
 	
+	public float getRadius() {
+		return planet.getWidth() / 2;
+	}
+	
 	private class Part {
 		
 		private float x, y, dx, dy;

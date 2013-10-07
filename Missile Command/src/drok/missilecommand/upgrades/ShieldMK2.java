@@ -1,18 +1,20 @@
 package drok.missilecommand.upgrades;
 
+import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 
+import drok.missilecommand.Planet;
 import drok.missilecommand.states.game.GameState;
 
 public class ShieldMK2 extends Shield {
 	//Fields
 	
-	public ShieldMK2(float centerx, float centery, Image img, GameState gs) {
-		super(centerx, centery, 5, img, gs);
+	public ShieldMK2(Planet planet, Image img, GameState gs) {
+		super(planet, 5, img, gs);
 	}
 
 	@Override
-	public void render() {
+	public void render(Graphics g) {
 		if(!isDestroyed)
 			shieldImg.drawCentered(x, y);
 	}

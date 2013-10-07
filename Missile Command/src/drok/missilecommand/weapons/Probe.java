@@ -2,6 +2,7 @@ package drok.missilecommand.weapons;
 
 import java.util.List;
 
+import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 
 import drok.missilecommand.debris.Debris;
@@ -59,7 +60,7 @@ public class Probe implements Weapon, Upgrade {
 	}
 	
 	@Override
-	public void render() {
+	public void render(Graphics g) {
 		probeImg.drawCentered(x, y);
 	}
 

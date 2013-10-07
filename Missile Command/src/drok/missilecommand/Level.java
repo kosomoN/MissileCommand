@@ -19,6 +19,7 @@ public class Level {
 
 	private List<Spawnable> initalSpawnables = new ArrayList<Spawnable>();
 	private List<Spawnable> spawnables = new ArrayList<Spawnable>();
+	private String[] story;
 	private boolean hasWon;
 	private int timeSinceLastDebris;
 	private Random random;
@@ -69,7 +70,7 @@ public class Level {
 				gs.addEntity(sp.getDebris(x, y, 0.02f, (float) (Math.random() * 360), gs.getPlanet()));
 				if(sp.isDoneSpawning())
 					spawnables.remove(sp);
-			} else if(gs.getDebris().isEmpty()){
+			} else if(gs.getDebris().isEmpty()) {
 				hasWon = true;
 			}
 			timeSinceLastDebris = 0;
@@ -92,6 +93,7 @@ public class Level {
 			planetName = (String) obj.get("planetName");
 			name = (String) obj.get("name");
 			missileCount = ((Long) obj.get("missiles")).intValue();
+			story = (String[]) obj.get("story").toString().split(";");
 		} finally {
 			if(fr != null)
 				fr.close();
@@ -166,5 +168,9 @@ public class Level {
 
 	public int getMissileCount() {
 		return missileCount;
+	}
+	
+	public String[] getStory() {
+		return story;
 	}
 }

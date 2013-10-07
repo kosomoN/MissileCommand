@@ -14,7 +14,7 @@ public class Button {
 	private Color color, txtColor;
 	private String text;
 	private Image img;
-	private boolean selected = false;
+	private boolean selected, pressed;
 	
 	public Button(float x, float y, float width, float height, String text, Color color, Color txtColor) {
 		this.x = x;
@@ -55,27 +55,40 @@ public class Button {
 		img.draw(x, y, scale);
 	}
 	
-	public void update(float x, float y, GameContainer container) {
-		clicked(x, y, container);
-		if(selected) {
-			changeImage(ResourceManager.getImage("GUIsheet.png").getSubImage(37, 17, 10, 10));
-		} else {
-			changeImage(ResourceManager.getImage("GUIsheet.png").getSubImage(27, 17, 10, 10));
-		}
+	public void update(GameContainer container) {
+		
 	}
 	
 	public boolean hoverOver(float x, float y) {
 		return Util.isInside(x, y, new Rectangle(getX(), getY(), width * scale, height * scale));
 	}
 	
-	public boolean clicked(float x, float y, GameContainer container) {
-		if(hoverOver(x, y)) {
+	public boolean clicked(GameContainer container) {
+		if(hoverOver(container.getInput().getMouseX(), container.getInput().getMouseY())) {
 			if(container.getInput().isMousePressed(Input.MOUSE_LEFT_BUTTON)) {
+				pressed = true;
+			}
+			
+			if(released(container)) {
 				if(img != null)
 					selected = true;
 				return true;
 			}
 		}
+		
+		return false;
+	}
+	
+	private boolean released(GameContainer container) {
+		if(!container.getInput().isMouseButtonDown(Input.MOUSE_LEFT_BUTTON)) {
+			if(pressed == true) {
+				pressed = false;
+				return true;
+			} else {
+				return false;
+			}
+		}
+			
 		return false;
 	}
 	

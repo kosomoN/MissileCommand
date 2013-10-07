@@ -74,4 +74,7 @@ public abstract class State extends BasicGameState {
 		return state;
 	}
 
+	public static int getScale() {
+		return SCALE;
+	}
 }

@@ -1,20 +1,22 @@
 package drok.missilecommand.upgrades;
 
 import org.newdawn.slick.Color;
+import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 
+import drok.missilecommand.Planet;
 import drok.missilecommand.states.game.GameState;
 
 public class ShieldMK1 extends Shield {
 	//Fields
 	private Color color = new Color(1, 1, 1, 1f);
 	
-	public ShieldMK1(float centerx, float centery, Image shieldImg, GameState gs) {
-		super(centerx, centery, 3, shieldImg, gs);
+	public ShieldMK1(Planet planet, Image shieldImg, GameState gs) {
+		super(planet, 3, shieldImg, gs);
 	}
 
 	@Override
-	public void render() {
+	public void render(Graphics g) {
 		if(color.a > 0) {
 			shieldImg.draw(x - shieldImg.getWidth() / 2, y - shieldImg.getHeight() / 2, color);
 		}

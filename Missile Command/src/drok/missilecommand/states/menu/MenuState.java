@@ -81,28 +81,26 @@ public class MenuState extends State {
 	public void update(GameContainer container, StateBasedGame game, int delta) throws SlickException {
 		if(campaign.hoverOver(input.getMouseX(), input.getMouseY())) {
 			selecty = campaign.getY() + campaign.getHeight() / 4;
-			if(!ignoreClick && campaign.clicked(input.getMouseX(), input.getMouseY(), container)) {
-				//music.fade(2000, 0, true);
+			if(!ignoreClick && campaign.clicked(container)) {
 				//Must check if campaign already started
 				game.enterState(Launch.LEVELSELECTSTATE);
 			}
 		} else if(arcade.hoverOver(input.getMouseX(), input.getMouseY())) {
 			selecty = arcade.getY() + arcade.getHeight() / 4;
-			if(!ignoreClick && arcade.clicked(input.getMouseX(), input.getMouseY(), container)) {
-				//music.fade(2000, 0, true);
+			if(!ignoreClick && arcade.clicked(container)) {
 				playArcade = true;
 				game.enterState(Launch.GAMEMODESTATE);
 			}
 		} else if(help.hoverOver(input.getMouseX(), input.getMouseY())) {
 			selecty = help.getY() + help.getHeight() / 4;
-			if(!ignoreClick && help.clicked(input.getMouseX(), input.getMouseY(), container))
+			if(!ignoreClick && help.clicked(container))
 				game.enterState(Launch.HELPSTATE);
 		} else if(exit.hoverOver(input.getMouseX(), input.getMouseY())) {
 			selecty = exit.getY() + exit.getHeight() / 4;
-			if(!ignoreClick && exit.clicked(input.getMouseX(), input.getMouseY(), container))
+			if(!ignoreClick && exit.clicked(container))
 				container.exit();
 		} else if(muteMusic.hoverOver(input.getMouseX(), input.getMouseY())) {
-			if(muteMusic.clicked(input.getMouseX(), input.getMouseY(), container)) {
+			if(muteMusic.clicked(container)) {
 				if(muteMusic.getImage().equals(ResourceManager.getImage("Mute.png"))) {
 					muteMusic.changeImage(ResourceManager.getImage("UnMute.png"));
 					container.setMusicOn(true);
@@ -112,7 +110,7 @@ public class MenuState extends State {
 				}
 			}
 		} else if(muteSound.hoverOver(input.getMouseX(), input.getMouseY())) {
-			if(muteSound.clicked(input.getMouseX(), input.getMouseY(), container)) {
+			if(muteSound.clicked(container)) {
 				if(muteSound.getImage().equals(ResourceManager.getImage("MuteSound.png"))) {
 					muteSound.changeImage(ResourceManager.getImage("UnMuteSound.png"));
 					container.setSoundOn(true);
@@ -133,6 +131,10 @@ public class MenuState extends State {
 	
 	public static boolean isPlayingArcade() {
 		return playArcade;
+	}
+	
+	public void fadeMusic(int duration) {
+		music.fade(duration, 0, true);
 	}
 
 	public Music getMusic() {

@@ -101,6 +101,9 @@ public class LevelCreator extends JFrame {
 		final JTextField debrisName = new JTextField("Debris");
 		panel.add(debrisName);
 		
+		final JTextField story = new JTextField("Write dialogs separated by a ;");
+		panel.add(story);
+		
 		final JSpinner debrisAmount = new JSpinner();
 		debrisAmount.setValue(1);
 		panel.add(debrisAmount);
@@ -141,6 +144,7 @@ public class LevelCreator extends JFrame {
 					JSONObject jsonObj = new JSONObject();
 					jsonObj.put("name", name.getText());
 					jsonObj.put("planetName", planetName.getText());
+					jsonObj.put("story", story.getText());
 					
 					Map<String, Integer> map = new HashMap<String, Integer>();
 					for(int i = 0; i < list.getModel().getSize(); i++) {

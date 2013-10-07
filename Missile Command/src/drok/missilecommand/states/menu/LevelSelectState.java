@@ -23,17 +23,19 @@ import drok.missilecommand.states.State;
 import drok.missilecommand.states.game.LevelBasedGameState;
 import drok.missilecommand.utils.Button;
 import drok.missilecommand.utils.ResourceManager;
+import drok.missilecommand.utils.Util;
 
 public class LevelSelectState extends State {
 
 	private static final int AREA_WIDTH = 2048, AREA_HEIGHT = 2048;
 	private static final float MAX_ZOOM_OUT = 0.25f;
 	private static Image moonImg, mask;
+	private int clicksAfterDragged;
 	private Button back;
 	private float zoomLevel = 1;
 	private float camPosx, camPosy;
 	private float initialCamX, initialCamY, goToX, goToY, initialZoom, camT;
-	private boolean isMovingCam;
+	private boolean isMovingCam, dragging;
 	private List<Point> stars = new ArrayList<Point>();
 	private List<LevelSelectPlanet> planets = new ArrayList<LevelSelectPlanet>();
 	private float moonInfoTimer;
@@ -119,11 +121,6 @@ public class LevelSelectState extends State {
 	}
 
 	@Override
-	protected void renderScaled(Graphics g) {
-		super.renderScaled(g);
-	}
-
-	@Override
 	public void render(GameContainer container, StateBasedGame game, Graphics g) throws SlickException {
 		g.scale(zoomLevel, zoomLevel);
 		g.translate(-camPosx + container.getWidth() / 2 / zoomLevel, -camPosy + container.getHeight() / 2 / zoomLevel);
@@ -174,24 +171,27 @@ public class LevelSelectState extends State {
 		g.setColor(Color.white);
 		x += 15;
 		int textY = y + 30; 
-		renderMoonInfoLine(g, x, textY, y, "Name: " + moon.name);
+		doneRenderingInfo = Util.renderTextLineWithRandomCharAtEnd("Name: " + moon.name, g, 1f, x, textY, y, moonInfoTimer);
 		
 		String str;
 		for(Spawnable sp : moon.level.getSpawnables()) {
 			textY += 30;
 			str = sp.getAmount() + " " + sp.getSpawnTypeName() + (sp.getAmount() > 1 ? "'s" : "");
-			renderMoonInfoLine(g, x, textY, y, str);
+			doneRenderingInfo = Util.renderTextLineWithRandomCharAtEnd(str, g, 1f, x, textY, y, moonInfoTimer);
 		}
 		
 		textY += 30;
-		renderMoonInfoLine(g, x, textY, y, "Missiles: " + moon.level.getMissileCount());
+		doneRenderingInfo = Util.renderTextLineWithRandomCharAtEnd("Missiles: " + moon.level.getMissileCount(), g, 1f, x, textY, y, moonInfoTimer);
 		
 		textY += 30;
 		str = "Rate: " + (1000d / moon.level.getSpawnTime()) + "/s";
-		renderMoonInfoLine(g, x, textY, y, str);
+		doneRenderingInfo = Util.renderTextLineWithRandomCharAtEnd(str, g, 1f, x, textY, y, moonInfoTimer);
+		
+		if(!doneRenderingInfo && moonInfoTimer % 1 < 0.2)
+			beepSound.play();
 	}
 	
-	private void renderMoonInfoLine(Graphics g, int x, int textY, int y, String str) {
+	/*private void renderTextLineWithRandomCharAtEnd(Graphics g, int x, int textY, int y, String str) {
 		if(moonInfoTimer - ((textY - y) / 15) >= 0 ) {
 			if((moonInfoTimer - ((textY - y) / 15) < str.length())) {
 				g.drawString(str.substring(0, (int) moonInfoTimer - ((textY - y) / 15)) + (char)(Math.random() * 26 + 'a'), x, textY);
@@ -199,9 +199,8 @@ public class LevelSelectState extends State {
 			} else
 				g.drawString(str, x, textY);
 			
-			
 		}
-	}
+	}*/
 	
 	private float cosInterpolation(float x1, float x2, float t) {
 	   double t2 = (1 - Math.cos(t * Math.PI)) / 2;
@@ -240,8 +239,6 @@ public class LevelSelectState extends State {
 		for(LevelSelectPlanet planet : planets)
 			planet.update();
 		moonInfoTimer += 0.2f;
-		if(!doneRenderingInfo && moonInfoTimer % 1 < 0.2)
-			beepSound.play();
 		
 		if(!hasRenderedMoonInfo) {
 			moonInfoTimer = 0;
@@ -262,11 +259,23 @@ public class LevelSelectState extends State {
 				isMovingCam = false;
 			}
 		}
+		
+		
+		if(back.hoverOver(container.getInput().getMouseX(), container.getInput().getMouseY())) {
+			back.changeImage(ResourceManager.getImage("BackButtonHover.png"));
+			if(!dragging)
+				if(back.clicked(container))
+					game.enterState(Launch.MENUSTATE);
+		} else {
+			back.changeImage(ResourceManager.getImage("BackButton.png"));
+		}
 	}
 
 	@Override
 	public void mouseDragged(int oldx, int oldy, int newx, int newy) {
 		super.mouseDragged(oldx, oldy, newx, newy);
+		dragging = true;
+		clicksAfterDragged = 0;
 		if(!isMovingCam) {
 			camPosx += (oldx - newx) / zoomLevel;
 			camPosy += (oldy - newy) / zoomLevel;
@@ -316,6 +325,18 @@ public class LevelSelectState extends State {
 						break;
 					}
 				}
+			}
+		}
+	}
+
+	@Override
+	public void mouseReleased(int button, int x, int y) {
+		super.mousePressed(button, x, y);
+		if(dragging) {
+			clicksAfterDragged++;
+			if(clicksAfterDragged > 0) {
+				clicksAfterDragged = 0;
+				dragging = false;
 			}
 		}
 	}

@@ -13,14 +13,13 @@ import drok.missilecommand.utils.ResourceManager;
 
 public class GameModeState extends State {
 	//Fields
-	private int mouseX, mouseY;
 	private Image GUISheet;
 	private static Difficulty difficulty = Difficulty.NORMAL;
 	private int arrowScale = 2;
 	private String command1 = "When you are ready,";
 	private String command2 = "take the key and get ready for battle!";
 	private boolean leaving = false;
-	private Button leftArrow, rightArrow, play;
+	private Button leftArrow, rightArrow, play, back;
 	
 	public enum Difficulty {
 		EASY(0), NORMAL(1), HARD(2);
@@ -65,6 +64,7 @@ public class GameModeState extends State {
 		leftArrow = new Button(container.getWidth() / 2 - 22 - 50 , container.getHeight() * 2 / 3, 11, 11, GUISheet.getSubImage(26, 0, 11, 11), arrowScale);
 		rightArrow = new Button(container.getWidth() / 2 + 50 , container.getHeight() * 2 / 3, 11, 11, GUISheet.getSubImage(37, 0, 11, 11), arrowScale);
 		play = new Button(container.getWidth() / 2 - 6 * SCALE , container.getHeight() - 40 - 10, 12, 5, GUISheet.getSubImage(26, 11, 12, 5), SCALE);
+		back = new Button(10, 10, ResourceManager.getImage("BackButton.png").getWidth(), ResourceManager.getImage("BackButton.png").getHeight(), ResourceManager.getImage("BackButton.png"), 1);
 	}
 
 	@Override
@@ -94,27 +94,34 @@ public class GameModeState extends State {
 			//Drawing play button and key
 			g.drawString("Play", container.getWidth() / 2 - g.getFont().getWidth("Play") / 2, container.getHeight() - play.getHeight() - 50);
 			play.render(g);
+			
+			//rendering back button
+			back.render(g);
 		}
 	}
 
 	@Override
 	public void update(GameContainer container, StateBasedGame game, int delta) throws SlickException {
-		mouseX = container.getInput().getMouseX();
-		mouseY = container.getInput().getMouseY();
-		
-		if(leftArrow.clicked(mouseX, mouseY, container)) {
+		if(leftArrow.clicked(container)) {
 			if(difficulty.asNumber > 0)
 				difficulty = difficulty.getFromNumber(difficulty.getAsNumber() - 1);
-		} else if(rightArrow.clicked(mouseX, mouseY, container)) {
+		} else if(rightArrow.clicked(container)) {
 			if(difficulty.asNumber < 2)
 				difficulty = difficulty.getFromNumber(difficulty.getAsNumber() + 1);
-		} else if(play.clicked(mouseX, mouseY, container)) {
-			
+		} else if(play.clicked(container)) {
 			if(MenuState.isPlayingArcade()) {
 				((MenuState) game.getState(Launch.MENUSTATE)).getMusic().fade(2000, 0, true);
 				game.enterState(Launch.ENDLESSGAMESTATE);
 			} else
 				game.enterState(Launch.LEVELGAMESTATE);
+		}
+		
+		if(back.hoverOver(container.getInput().getMouseX(), container.getInput().getMouseY())) {
+			back.changeImage(ResourceManager.getImage("BackButtonHover.png"));
+			if(back.clicked(container))
+				game.enterState(Launch.MENUSTATE);
+		} else {
+			back.changeImage(ResourceManager.getImage("BackButton.png"));
 		}
 	}
 

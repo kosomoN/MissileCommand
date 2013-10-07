@@ -35,6 +35,7 @@ public class ResourceManager {
 				}
 			}
 		}
+		
 	}
 
 	public static Image getImage(String string) {
