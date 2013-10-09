@@ -61,7 +61,7 @@ public class Planet {
 				try {
 					Graphics g = planet.getGraphics();
 					g.clear();
-					g.drawImage(mask, 0, 0);
+					g.drawImage(mask, 0, 0, planet.getHeight(), planet.getHeight(), 0, 0, mask.getWidth(), mask.getHeight());
 					g.setDrawMode(Graphics.MODE_COLOR_MULTIPLY);
 					g.drawImage(planetTexture, -imgPos, 0);
 					g.drawImage(planetTexture, -imgPos + 32, 0);

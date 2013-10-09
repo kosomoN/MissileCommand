@@ -98,7 +98,7 @@ public class Turret implements Weapon {
 	public static void init() throws SlickException {
 		satelliteImg = ResourceManager.getImage("Satellite.png");
 		satelliteImg.setFilter(Image.FILTER_NEAREST);
-		satelliteImg = satelliteImg.getScaledCopy(4);
+		satelliteImg = satelliteImg.getScaledCopy(State.SCALE * 2 / 3);
 	}
 	
 	private class Satellite {

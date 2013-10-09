@@ -23,9 +23,8 @@ public class LevelBasedGameState extends GameState {
 	private int countdown = 4000;
 	private float timer;
 	private float alpha = 1;
-	private boolean enteredLevel, renderedInfo, renderedStory;
-	private boolean ready, renderedLine;
-	private boolean skipIntro;
+	private boolean enteredLevel, renderedStory;
+	private boolean readyFaded, readyRendering, renderedLine;
 	private int storyDialog = 0;
 	
 	private static Image youWinImg;
@@ -75,13 +74,11 @@ public class LevelBasedGameState extends GameState {
 			countdown -= delta;
 		} else {
 			timer += 0.2f;
-			if(!renderedInfo && timer % 1 < 0.2f && !ready) {
-				beepSound.play();
-			} else if(!renderedStory && renderedInfo && timer % 1 < 0.2f && !renderedLine) {
-				beepSound.play();
-			} else if(!ready && renderedInfo) {
-				delayInMilliseconds -= delta;
-			} else if(ready) {
+			if(timer % 1 < 0.2f) {
+				if(!renderedStory && timer % 1 < 0.2f && !renderedLine) {
+					beepSound.play();
+				} 
+			} if(!readyRendering) {
 				delayInMilliseconds -= delta;
 			}
 		}
@@ -108,42 +105,24 @@ public class LevelBasedGameState extends GameState {
 					Integer.toString((int) Math.floor(countdown / 1000 )));
 			}
 		} else {
-			if(!skipIntro) {
-				g.setColor(Color.white);
-				
-				//Rendering level name
-				if(!renderedInfo) {
-					ready = Util.renderTextLineWithRandomCharAtEnd("Level: " + level.getName(), g, alpha, 30, container.getHeight() - 60, container.getHeight() - 90, timer);
-					if(ready) {
-						if(delayInMilliseconds <= 0) {
-							//Runs once
-							timer = 0;
-							delayInMilliseconds = 5000;
-							alpha = 1f;
-							renderedInfo = true;
-						} else if(delayInMilliseconds <= 2500) {
-							alpha  -= 0.01;
-	//						txtX += 0.2;
-						}
-					}
-				} else if(!renderedStory) {
-					ready = renderStory(story[storyDialog], g);
-					if(ready) {
-						renderedLine = false;
-						alpha = 1f;
-						delayInMilliseconds = 5000;
-						timer = 0;
-						storyDialog++;
-						if(storyDialog >= story.length) {
-							renderedStory = true;
-						}
+			g.setColor(Color.white);
+			g.setFont(font16);
+			
+			if(!renderedStory) {
+				readyFaded = renderStory(story[storyDialog], g);
+				if(readyFaded) {
+					renderedLine = false;
+					alpha = 1f;
+					delayInMilliseconds = 5000;
+					timer = 0;
+					storyDialog++;
+					if(storyDialog >= story.length) {
+						renderedStory = true;
 					}
 				}
-				
-				if(renderedInfo && renderedStory) {
-					enteredLevel = true;
-				}
-			} else {
+			}
+			
+			if(renderedStory) {
 				enteredLevel = true;
 			}
 		}
@@ -163,11 +142,13 @@ public class LevelBasedGameState extends GameState {
 	
 	@Override
 	public void mousePressed(int button, int x, int y) {
-		super.mousePressed(button, x, y);
-		if(gameOverColor.a > 0.7) {
-			game.enterState(Launch.SHOPSTATE);
-		} else if(!enteredLevel) {
-			skipIntro = true;
+		if(!enteredLevel) {
+			enteredLevel = true;
+		} else {
+			super.mousePressed(button, x, y);
+			if(gameOverColor.a > 0.7) {
+				game.enterState(Launch.SHOPSTATE);
+			}
 		}
 	}
 
@@ -181,7 +162,7 @@ public class LevelBasedGameState extends GameState {
 		boolean ready = false;
 		if(Util.renderTextLineWithRandomCharAtEnd(sentence, g, alpha, 30, container.getHeight() - 60, container.getHeight() - 90, timer)) {
 			renderedLine = true;
-			if(delayInMilliseconds <= 0) {
+			if(alpha <= 0) {
 				ready = true;
 			} else if(delayInMilliseconds <= 2500) {
 				alpha  -= 0.01;
@@ -195,11 +176,10 @@ public class LevelBasedGameState extends GameState {
 	 */
 	private void resetIntro() {
 		enteredLevel = false;
-		renderedInfo = false;
 		renderedStory = false;
 		renderedLine = false;
-		ready = false;
-		skipIntro = false;
+		readyFaded = false;
+		readyRendering = false;
 		
 		delayInMilliseconds = 5000;
 		countdown = 4000;

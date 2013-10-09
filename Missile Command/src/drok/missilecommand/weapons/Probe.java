@@ -7,28 +7,26 @@ import org.newdawn.slick.Image;
 
 import drok.missilecommand.debris.Debris;
 import drok.missilecommand.states.game.GameState;
-import drok.missilecommand.upgrades.Upgrade;
+import drok.missilecommand.upgrades.Ware;
 import drok.missilecommand.utils.ResourceManager;
 
-public class Probe implements Weapon, Upgrade {
-	private static Image probeImg;
-	
+public class Probe extends Ware implements Weapon {
 	private float x, y;
 	private List<Debris> debris;
-	private int timeSinceFire, fireRate = 5000;
+	private int timeSinceFire;
 	private GameState gs;
 	private double angle;
 	
+	private static int fireRate;
+	private static Image probeImg;
 	
-	public Probe(float x, float y, GameState gs) {
+	public Probe(float x, float y, GameState gs, int fireRate) {
 		this.x = x;
 		this.y = y;
 		this.gs = gs;
 		debris = gs.getDebris();
-	}
-	
-	public Probe() {
-		
+		Probe.fireRate = fireRate;
+		description = "A defense probe which will shoot asteroids for you. Fire Rate: " + fireRate / 1000 + "s";
 	}
 	
 	public static void init() {
@@ -73,14 +71,14 @@ public class Probe implements Weapon, Upgrade {
 	public Image getImage() {
 		return probeImg;
 	}
-	
-	@Override
-	public String getDescription() {
-		return "A defense probe which will\nshoot asteroids for you.\nFire Rate: " + fireRate / 1000 + "s";
-	}
 
 	@Override
 	public int getPrice() {
 		return 10;
+	}
+
+	@Override
+	public int getLevel() {
+		return 1;
 	}
 }

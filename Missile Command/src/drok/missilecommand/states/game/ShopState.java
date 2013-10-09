@@ -13,23 +13,22 @@ import org.newdawn.slick.state.StateBasedGame;
 
 import drok.missilecommand.Launch;
 import drok.missilecommand.states.State;
-import drok.missilecommand.upgrades.ShieldMK1;
-import drok.missilecommand.upgrades.ShieldMK2;
-import drok.missilecommand.upgrades.Upgrade;
+import drok.missilecommand.upgrades.*;
 import drok.missilecommand.utils.Button;
 import drok.missilecommand.utils.ResourceManager;
 import drok.missilecommand.utils.Util;
-import drok.missilecommand.weapons.Nuke;
-import drok.missilecommand.weapons.Probe;
+import drok.missilecommand.weapons.*;
 
 public class ShopState extends State {
 	//Fields
-	private List<Upgrade> upgrades = new ArrayList<Upgrade>();
-	private List<Upgrade> bought = new ArrayList<Upgrade>();
-	private Upgrade ware;
+	private List<Ware> wares = new ArrayList<Ware>();
+	private List<Ware> bought = new ArrayList<Ware>();
 	private List<Button> buttons = new LinkedList<Button>();
+	private Ware ware;
 	private Input input;
 	private Button buy, back;
+	
+	private int shieldLevel;
 	private int money = 0;
 	
 	public ShopState(int state) {
@@ -42,6 +41,7 @@ public class ShopState extends State {
 		input = container.getInput();
 		buy = new Button(container.getWidth() * 3 / 4 - 100, container.getHeight() * 3 / 4 + 3, 100, 30, "BUY", Color.green, Color.white);
 		back = new Button(10, 10, ResourceManager.getImage("BackButton.png").getWidth(), ResourceManager.getImage("BackButton.png").getHeight(), ResourceManager.getImage("BackButton.png"), 1);
+		shieldLevel = 1;
 	}
 
 	@Override
@@ -51,43 +51,48 @@ public class ShopState extends State {
 		money += ((LevelBasedGameState) game.getState(Launch.LEVELGAMESTATE)).getScore();
 		
 		int buttonAmount;
+		for(Ware w : wares)
+			if(w.getName().equals("Shield"))
+				shieldLevel = w.getLevel();
+		
 		
 		//Clearing lists
 		buttons.clear();
-		upgrades.clear();
+		wares.clear();
 		bought.clear();
 		
-		//Adding upgrades to the list
-		upgrades.add(new ShieldMK1(((LevelBasedGameState) game.getState(Launch.LEVELGAMESTATE)).getPlanet(), ResourceManager.getImage("Shield.png"), (LevelBasedGameState) game.getState(Launch.LEVELGAMESTATE)));
-		upgrades.add(new ShieldMK2(((LevelBasedGameState) game.getState(Launch.LEVELGAMESTATE)).getPlanet(), ResourceManager.getImage("Shield.png"), (LevelBasedGameState) game.getState(Launch.LEVELGAMESTATE)));
-		upgrades.add(new Probe(container.getWidth() / 2, container.getHeight() / 2, (LevelBasedGameState) game.getState(Launch.LEVELGAMESTATE)));
-		upgrades.add(new Nuke(((LevelBasedGameState) game.getState(Launch.LEVELGAMESTATE)).getPlanet(), container, (LevelBasedGameState) game.getState(Launch.LEVELGAMESTATE)));
+		//Adding wares to the list
+		wares.add(new Shield(((LevelBasedGameState) game.getState(Launch.LEVELGAMESTATE)).getPlanet(), shieldLevel, ResourceManager.getImage("Shield.png"), (LevelBasedGameState) game.getState(Launch.LEVELGAMESTATE)));
+		wares.add(new Probe(container.getWidth() / 2, container.getHeight() / 2, (LevelBasedGameState) game.getState(Launch.LEVELGAMESTATE), 5000));
+		wares.add(new Nuke(((LevelBasedGameState) game.getState(Launch.LEVELGAMESTATE)).getPlanet(), container, (LevelBasedGameState) game.getState(Launch.LEVELGAMESTATE)));
 		
 		//Adding atleast 10 buttons
-		if(upgrades.size() < 10)
+		if(wares.size() < 10)
 			buttonAmount = 10;
 		else
-			buttonAmount = upgrades.size();
+			buttonAmount = wares.size();
 		for(int i = 0; i < buttonAmount; i++) {
-			if(i >= upgrades.size())	//Empty buttons
+			if(i >= wares.size())	//Empty buttons
 				buttons.add(new Button(container.getWidth() / 4, container.getHeight() / 4 + i * container.getHeight() / 20, container.getWidth() / 4, container.getHeight() / 20, "-", new Color(10, 10, 10), Color.white));
-			else	//Buttons with upgrades
-				buttons.add(new Button(container.getWidth() / 4, container.getHeight() / 4 + i * container.getHeight() / 20, container.getWidth() / 4, container.getHeight() / 20, upgrades.get(i).getName(), new Color(10, 10, 10), Color.white));
+			else	//Buttons with wares
+				buttons.add(new Button(container.getWidth() / 4, container.getHeight() / 4 + i * container.getHeight() / 20, container.getWidth() / 4, container.getHeight() / 20, wares.get(i).getName(), new Color(10, 10, 10), Color.white));
 		}
+		
+		buttons.get(0).setSelected(true);
 	}
 	
 	
 
 	@Override
 	public void render(GameContainer container, StateBasedGame game, Graphics g) throws SlickException {
-		//Changing color of the button upon hoover, and changing upgrade information
+		//Changing color of the button upon hoover, and changing Ware information
 		for(int i = 0; i < buttons.size(); i++) {
 			if(buttons.get(i).isSelected()) {
 				buttons.get(i).setColor(new Color(50, 50, 50));
-				for(int j = 0; j < upgrades.size(); j++) {
-					if(buttons.get(i).getText().equalsIgnoreCase(upgrades.get(j).getName())) {
-						Util.drawLines(g, font16, upgrades.get(j).getDescription(), container.getWidth() / 2 + 20, container.getHeight() / 2);
-						Util.drawLines(g, font16, "Price: " + upgrades.get(j).getPrice(), container.getWidth() * 3 / 4 -  font16.getWidth("Price: " + upgrades.get(j).getPrice()) - 10, container.getHeight() * 3 / 4 - font16.getHeight() - 10);
+				for(int j = 0; j < wares.size(); j++) {
+					if(buttons.get(i).getText().equalsIgnoreCase(wares.get(j).getName())) {
+						Util.drawLines(g, font16, wares.get(j).getDescription(font16, container.getWidth() / 4 - 40), container.getWidth() / 2 + 10, container.getHeight() / 4 + 30);
+						Util.drawLines(g, font16, "Price: " + wares.get(j).getPrice(), container.getWidth() * 3 / 4 -  font16.getWidth("Price: " + wares.get(j).getPrice()) - 10, container.getHeight() * 3 / 4 - font16.getHeight() - 10);
 					}
 				}
 			}
@@ -115,26 +120,31 @@ public class ShopState extends State {
 			}
 		}
 		
+		//Checking which button is selected
 		for(int i = 0; i < buttons.size(); i++) {
 			if(buttons.get(i).isSelected()) {
-				if(upgrades.size() > 0 && i < upgrades.size() && money >= upgrades.get(i).getPrice()) {
-					buy.setColor(Color.green);
+				if(wares.size() > 0 && i < wares.size() && money >= wares.get(i).getPrice()) {
+					if(buy.hoverOver(input.getMouseX(), input.getMouseY())) {
+						buy.setColor(new Color(0, 145, 25));
+					} else {
+						buy.setColor(Color.green);
+					}
 					//Buying
 					if(buy.clicked(container)) {
 						if(buy()) {
-							int buttonIndex = upgrades.indexOf(ware);
+							int buttonIndex = wares.indexOf(ware);
 							buttons.remove(buttonIndex);
 							for(int j = 0; j < buttons.size(); j++) {
 								if(j >= buttonIndex)
 									buttons.get(j).setY(buttons.get(j).getY() - buttons.get(j).getHeight());
 							}
 							
-							if(upgrades.size() < 10)
+							if(wares.size() < 10)
 								buttons.add(buttons.size(), new Button(container.getWidth() / 4, container.getHeight() / 4 + 9 * container.getHeight() / 20, container.getWidth() / 4, container.getHeight() / 20, "-", new Color(10, 10, 10), Color.white));
 							else
-								buttons.add(new Button(container.getWidth() / 4, container.getHeight() / 4 + (upgrades.size() - 1) * container.getHeight() / 20, container.getWidth() / 4, container.getHeight() / 20, "-", new Color(10, 10, 10), Color.white));
+								buttons.add(new Button(container.getWidth() / 4, container.getHeight() / 4 + (wares.size() - 1) * container.getHeight() / 20, container.getWidth() / 4, container.getHeight() / 20, "-", new Color(10, 10, 10), Color.white));
 								
-							upgrades.remove(ware);
+							wares.remove(ware);
 							bought.add(ware);
 							ware = null;
 							buttons.get(0).setSelected(true);
@@ -157,10 +167,10 @@ public class ShopState extends State {
 	}
 	
 	public boolean buy() {
-		for(int i = 0; i < upgrades.size(); i++) {
-			if(buttons.get(i).isSelected() && upgrades.get(i).getPrice() <= money) {
+		for(int i = 0; i < wares.size(); i++) {
+			if(buttons.get(i).isSelected() && wares.get(i).getPrice() <= money) {
 				buttons.get(i).setSelected(false);
-				ware = upgrades.get(i);
+				ware = wares.get(i);
 				money -= ware.getPrice();
 				return true;
 			}
@@ -168,7 +178,7 @@ public class ShopState extends State {
 		return false;
 	}
 	
-	public List<Upgrade> getBoughtUpgrades() {
+	public List<Ware> getBoughtWares() {
 		return bought;
 	}
 }

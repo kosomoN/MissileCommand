@@ -93,7 +93,11 @@ public class Level {
 			planetName = (String) obj.get("planetName");
 			name = (String) obj.get("name");
 			missileCount = ((Long) obj.get("missiles")).intValue();
-			story = (String[]) obj.get("story").toString().split(";");
+			String[] tempStory = (String[]) obj.get("story").toString().split(";");
+			story = new String[tempStory.length + 1];
+			story[0] = "Level: " + name;
+			for(int i = 0; i < tempStory.length; i++)
+				story[i + 1] = tempStory[i];
 		} finally {
 			if(fr != null)
 				fr.close();

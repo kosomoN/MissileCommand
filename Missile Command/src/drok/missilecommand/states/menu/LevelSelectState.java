@@ -12,6 +12,7 @@ import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
+import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.Sound;
 import org.newdawn.slick.state.StateBasedGame;
@@ -260,6 +261,10 @@ public class LevelSelectState extends State {
 			}
 		}
 		
+		if(container.getInput().isKeyPressed(Input.KEY_S)) {
+			game.enterState(Launch.SHOPSTATE);
+		}
+		
 		
 		if(back.hoverOver(container.getInput().getMouseX(), container.getInput().getMouseY())) {
 			back.changeImage(ResourceManager.getImage("BackButtonHover.png"));
@@ -352,9 +357,9 @@ public class LevelSelectState extends State {
 		
 		public LevelSelectPlanet(String name, float x, float y) {
 			try {
-				planetImg = new Image(16, 16);
-				planetImg.setFilter(Image.FILTER_NEAREST);
 				planetTexture = ResourceManager.getImage("Planet " + name + " Texture.png");
+				planetImg = new Image(planetTexture.getHeight(), planetTexture.getHeight());
+				planetImg.setFilter(Image.FILTER_NEAREST);
 			} catch (SlickException e) {
 				e.printStackTrace();
 			}

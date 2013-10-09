@@ -19,6 +19,14 @@ public class Util {
 				y > rect.getY() && y < rect.getY() + rect.getHeight();
 	}
 	
+	/**
+	 * Draws a string centered relative to a given point
+	 * @param g - Graphics context
+	 * @param font - The font for the text
+	 * @param string - the string to draw
+	 * @param firstLineMiddleX - The middle x coordinate
+	 * @param firstLineY - The y coordinate
+	 */
 	public static void drawCenteredLines(Graphics g, Font font, String string, int firstLineMiddleX, int firstLineY) {
 		g.setFont(font);
 		for(String s : string.split("\n")) {
@@ -27,6 +35,14 @@ public class Util {
 		}
 	}
 	
+	/**
+	 * Draw a line of text at a given start point
+	 * @param g - Graphics context
+	 * @param font - The font of the text
+	 * @param string - The string to be drawn
+	 * @param firstLineX - The x coordinate of the first character
+	 * @param firstLineY - The y coordinate
+	 */
 	public static void drawLines(Graphics g, Font font, String string, int firstLineX, int firstLineY) {
 		g.setFont(font);
 		for(String s : string.split("\n")) {
@@ -35,16 +51,29 @@ public class Util {
 		}
 	}
 	
+	/**
+	 * For adding spaces. Use it like this:
+	 * "Hello + addSpaces(1) + World!"
+	 * @param spaces - Number of spaces
+	 * @return The string with number of spaces
+	 */
 	public static String addSpaces(int spaces) {
 		String string = "";
-		
-		if(spaces < 0)
-			spaces = 0;
-		
-		for(int i = 0; i < spaces; i++) {
+		for(int i = 0; i < spaces; i++)
 			string += " ";
-		}
 		return string;
+	}
+	
+	/**
+	 * Adds a number of new lines to a string
+	 * @param lines - Number of new lines
+	 * @return The string containing the new line characters
+	 */
+	public static String addNewLines(int lines) {
+		String s = "";
+		for(int i = 0; i < lines; i++)
+			s += "\n";
+		return s;
 	}
 	
 	/**

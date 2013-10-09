@@ -21,7 +21,7 @@ import drok.missilecommand.debris.BigAsteroid;
 import drok.missilecommand.debris.Debris;
 import drok.missilecommand.debris.HeavyFighter;
 import drok.missilecommand.states.State;
-import drok.missilecommand.upgrades.Upgrade;
+import drok.missilecommand.upgrades.Ware;
 import drok.missilecommand.utils.ResourceManager;
 import drok.missilecommand.weapons.Nuke;
 import drok.missilecommand.weapons.Probe;
@@ -32,14 +32,13 @@ public abstract class GameState extends State {
 	private List<Entity> entities = new ArrayList<Entity>(), newEntities = new ArrayList<Entity>();
 	private List<Debris> debris = new ArrayList<Debris>();
 	private List<Point> stars = new ArrayList<Point>();
-	private Upgrade[] upgrades;
+	private List<Ware> wares = new ArrayList<Ware>();
 	protected Planet planet;
 	protected Nuke nuke;
 	private Turret turret;
 	protected int missiles;
 	private int partsCollected;
 	private int missileCost = 15;
-	private boolean nukeLaunch;
 	
 	protected static Image gameOver;
 	private static Image pauseImg;
@@ -80,9 +79,8 @@ public abstract class GameState extends State {
 	@Override
 	public void enter(GameContainer container, StateBasedGame game) throws SlickException {
 		super.enter(container, game);
-		upgrades = ((ShopState) game.getState(Launch.SHOPSTATE)).getBoughtUpgrades().toArray(new Upgrade[((ShopState) game.getState(Launch.SHOPSTATE)).getBoughtUpgrades().size()]);
+		wares = ((ShopState) game.getState(Launch.SHOPSTATE)).getBoughtWares();
 		nuke = new Nuke(planet, container, this);
-		nukeLaunch = false;
 		restart();
 	}
 
@@ -121,19 +119,10 @@ public abstract class GameState extends State {
 				ent.render(g);
 		}
 		
-		if(upgrades.length > 0) {
-			for(Upgrade u : upgrades) {
-				if(u.getName() != "Nuke") {
-					u.render(g);
-				} else {
-					nuke.render(g);
-				}
-			}
+		for(Ware w : wares) {
+			w.render(g);
 		}
-		
-		if(nukeLaunch) {
-			nuke.render(g);
-		}
+	
 		planet.render(g);
 		
 		if(paused) {
@@ -153,8 +142,6 @@ public abstract class GameState extends State {
 			planet.update(this, delta);
 			turret.update(this, delta);
 			//probe.update(delta);
-			if(nukeLaunch)
-				nuke.update(delta);
 			
 			for(Iterator<Entity> it = entities.iterator(); it.hasNext();) {
 				Entity ent = it.next();
@@ -162,30 +149,23 @@ public abstract class GameState extends State {
 					if(ent instanceof Debris)
 						debris.remove(ent);
 					it.remove();
-				} else if(ent instanceof Debris) {
-					nuke.update(delta, (Debris) ent);
 				}
 			}
 			
-			if(upgrades.length > 0) {
-				for(Upgrade u : upgrades) {
-					if(u.getName() != "Nuke") {
-						u.update(delta);
-					} else
-						nuke.update(delta);
-				}
+			for(Iterator<Ware> it = wares.iterator(); it.hasNext();) {
+				Ware w = it.next();
+				if(w instanceof Nuke) {
+					if(((Nuke) w).update(delta, debris))
+						wares.remove(w);
+					it.remove();
+				} else
+					w.update(delta);
 			}
-			
-			
+				
 			if(planet.isHit()) {
 				if(gameOverColor.a < 2) {
 					gameOverColor.a += 0.0025f;
 				}
-			}
-			
-			if(nuke.isOutOfScreen()) {
-				nukeLaunch = false;
-				nuke = new Nuke(planet, container, this);
 			}
 		} else {
 			pauseColorTimer += 0.05f;
@@ -202,7 +182,11 @@ public abstract class GameState extends State {
 				turret.fire(this, x / SCALE, y / SCALE);
 			}
 		} else if(button == Input.MOUSE_RIGHT_BUTTON) {
-			nukeLaunch = true;
+			for(Ware w : wares) {
+				if(w instanceof Nuke) {
+					((Nuke) w).setIsOnScreen(true);
+				}
+			}
 		}
 	}
 

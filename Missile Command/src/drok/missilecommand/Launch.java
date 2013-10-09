@@ -84,8 +84,8 @@ public class Launch extends StateBasedGame {
 
 	public static void main(String[] args) throws SlickException {
 		AppGameContainer app = new AppGameContainer(new Launch());
-		app.setDisplayMode(app.getScreenWidth(), app.getScreenHeight(), true);
-//		app.setDisplayMode(700, 600, false);
+//		app.setDisplayMode(app.getScreenWidth(), app.getScreenHeight(), true);
+		app.setDisplayMode(700, 600, false);
 		app.setTargetFrameRate(60);
 		loadProperties(app);
 //		app.setVSync(true);
