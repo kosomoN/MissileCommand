@@ -12,6 +12,7 @@ import drok.missilecommand.states.game.GameState;
 
 public class Shield extends Ware {
 	//Fields
+	private GameState gs;
 	private Image shieldImg;
 	private float x, y;
 	private boolean isDestroyed;
@@ -23,6 +24,8 @@ public class Shield extends Ware {
 		this.x = planet.getX();
 		this.y = planet.getY();
 		this.durability = durability;
+		this.gs = gs;
+		
 		shieldImg = img;
 		isDestroyed = false;
 		description = "Protects from " + durability + (durability == 1 ? " hit" : "hits");
@@ -35,24 +38,6 @@ public class Shield extends Ware {
 		}
 	}
 	
-	public boolean update(GameState gs) {
-		if(isDestroyed) {
-			color.a -= 0.02f;
-		}
-		for(Iterator<Debris> debris = gs.getDebris().iterator(); debris.hasNext();) {
-			Debris deb = debris.next();
-			if(!isDestroyed && (deb.getX() - x) * (deb.getX() - x) + (deb.getY() - y) * (deb.getY() - y) < Math.pow(shieldImg.getWidth() / 2 + deb.getBoundingCircle().getRadius(), 2)) {
-				deb.hit(gs);
-				hit();
-				if(durability <= 0) {
-					isDestroyed = true;
-					return true;
-				}
-			}
-		}
-		return false;
-	}
-	
 	public void hit() {
 		durability--;
 	}
@@ -63,7 +48,20 @@ public class Shield extends Ware {
 
 	@Override
 	public boolean update(int delta) {
-		return false;
+		if(isDestroyed) {
+			color.a -= 0.02f;
+		}
+		for(Iterator<Debris> debris = gs.getDebris().iterator(); debris.hasNext();) {
+			Debris deb = debris.next();
+			if(!isDestroyed && (deb.getX() - x) * (deb.getX() - x) + (deb.getY() - y) * (deb.getY() - y) < Math.pow(shieldImg.getWidth() / 2 + deb.getBoundingCircle().getRadius(), 2)) {
+				deb.hit(gs);
+				hit();
+				if(durability <= 0) {
+					isDestroyed = true;
+				}
+			}
+		}
+		return isDestroyed;
 	}
 
 	@Override
@@ -84,5 +82,10 @@ public class Shield extends Ware {
 	@Override
 	public int getLevel() {
 		return 0;
+	}
+
+	@Override
+	public boolean isUpgradeable() {
+		return durability < 3;
 	}
 }

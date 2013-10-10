@@ -79,7 +79,8 @@ public abstract class GameState extends State {
 	@Override
 	public void enter(GameContainer container, StateBasedGame game) throws SlickException {
 		super.enter(container, game);
-		wares = ((ShopState) game.getState(Launch.SHOPSTATE)).getBoughtWares();
+		wares.addAll(((ShopState) game.getState(Launch.SHOPSTATE)).getSuplementWares());
+		wares.addAll(((ShopState) game.getState(Launch.SHOPSTATE)).getUpgrades());
 		nuke = new Nuke(planet, container, this);
 		restart();
 	}

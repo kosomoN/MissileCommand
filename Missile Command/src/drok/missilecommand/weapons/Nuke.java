@@ -116,4 +116,9 @@ public class Nuke extends Ware implements Weapon {
 	public int getLevel() {
 		return 1;
 	}
+
+	@Override
+	public boolean isUpgradeable() {
+		return false;
+	}
 }

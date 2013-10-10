@@ -7,6 +7,7 @@ import org.newdawn.slick.Image;
 public abstract class Ware {
 	protected int level = 1;
 	protected String description;
+	protected boolean isUpgradeable;
 	
 	public void upgrade() {
 		level++;
@@ -35,4 +36,5 @@ public abstract class Ware {
 	public abstract Image getImage();
 	public abstract int getPrice();
 	public abstract int getLevel();
+	public abstract boolean isUpgradeable();
 }

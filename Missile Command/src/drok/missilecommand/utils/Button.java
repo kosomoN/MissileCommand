@@ -100,6 +100,10 @@ public class Button {
 		this.txtColor = txtColor;
 	}
 	
+	public void setText(String text) {
+		this.text = text;
+	}
+	
 	public void setSelected(boolean selected) {
 		this.selected = selected;
 	}
@@ -134,6 +138,10 @@ public class Button {
 	
 	public float getHeight() {
 		return height * scale;
+	}
+	
+	public Color getColor() {
+		return color;
 	}
 	
 	public Image getImage() {

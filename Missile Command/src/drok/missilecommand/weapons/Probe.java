@@ -81,4 +81,9 @@ public class Probe extends Ware implements Weapon {
 	public int getLevel() {
 		return 1;
 	}
+
+	@Override
+	public boolean isUpgradeable() {
+		return fireRate > 3000;
+	}
 }
