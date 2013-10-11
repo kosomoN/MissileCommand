@@ -29,7 +29,8 @@ import drok.missilecommand.weapons.Turret;
 
 public abstract class GameState extends State {
 
-	private List<Entity> entities = new ArrayList<Entity>(), newEntities = new ArrayList<Entity>();
+	protected List<Entity> entities = new ArrayList<Entity>();
+	private List<Entity> newEntities = new ArrayList<Entity>();
 	private List<Debris> debris = new ArrayList<Debris>();
 	private List<Point> stars = new ArrayList<Point>();
 	private List<Ware> wares = new ArrayList<Ware>();
@@ -43,7 +44,7 @@ public abstract class GameState extends State {
 	protected static Image gameOver;
 	private static Image pauseImg;
 	protected Color gameOverColor = new Color(1, 1, 1, -0.5f);
-	protected int score;
+	protected float score;
 	protected boolean paused;
 	private Color pauseColor = new Color(1, 1, 1, 1f);
 	private float pauseColorTimer;
@@ -240,7 +241,7 @@ public abstract class GameState extends State {
 		return planet;
 	}
 
-	public int getScore() {
+	public float getScore() {
 		return score;
 	}
 

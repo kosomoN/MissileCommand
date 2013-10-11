@@ -28,7 +28,7 @@ public class Laser implements Entity {
 		for(Debris deb : gs.getDebris()) {
 			if(!deb.isHit() && laserLine.intersects(deb.getBoundingCircle())) {
 				gs.debrisDestroyed(deb);
-				deb.hit(gs);
+				deb.hit(gs, this);
 			}
 		}
 	}

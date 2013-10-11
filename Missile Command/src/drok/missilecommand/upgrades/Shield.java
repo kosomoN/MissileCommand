@@ -54,7 +54,7 @@ public class Shield extends Ware {
 		for(Iterator<Debris> debris = gs.getDebris().iterator(); debris.hasNext();) {
 			Debris deb = debris.next();
 			if(!isDestroyed && (deb.getX() - x) * (deb.getX() - x) + (deb.getY() - y) * (deb.getY() - y) < Math.pow(shieldImg.getWidth() / 2 + deb.getBoundingCircle().getRadius(), 2)) {
-				deb.hit(gs);
+				deb.hit(gs, null);
 				hit();
 				if(durability <= 0) {
 					isDestroyed = true;

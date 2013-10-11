@@ -4,9 +4,11 @@ import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 
+import drok.missilecommand.Entity;
 import drok.missilecommand.Planet;
 import drok.missilecommand.states.game.GameState;
 import drok.missilecommand.utils.ResourceManager;
+import drok.missilecommand.weapons.Missile;
 
 public class BigAsteroid extends Debris {
 
@@ -41,10 +43,18 @@ public class BigAsteroid extends Debris {
 	}
 	
 	@Override
-	public void hit(GameState gs) {
-		super.hit(gs);
-		gs.addEntity(new Asteroid(x, y, 0.05f, (float) Math.toDegrees(Math.atan2(planet.getY() - y, planet.getX() - x)) + 90, gs.getPlanet()));
-		gs.addEntity(new Asteroid(x, y, 0.05f, (float) Math.toDegrees(Math.atan2(planet.getY() - y, planet.getX() - x)) - 90, gs.getPlanet()));
+	public void hit(GameState gs, Entity hitBy) {
+		super.hit(gs, hitBy);
+		if(hitBy instanceof Missile) {
+			Missile miss = (Missile) hitBy;
+			vector.x += miss.getDX();
+			vector.y += miss.getDY();
+			Asteroid ast = new Asteroid(x, y, vector.length(), (float) vector.getTheta(), gs.getPlanet());
+			for(int i = 0; i < 10; i++) {
+				gs.addEntity(ast.new Part(x, y, vector.x, vector.y, Math.random() * 360, 0.015f + Math.random() / 150f));
+			}
+			gs.addEntity(ast);
+		}
 	}
 
 	@Override

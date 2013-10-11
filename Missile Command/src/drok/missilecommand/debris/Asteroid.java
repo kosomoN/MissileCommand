@@ -36,17 +36,17 @@ public class Asteroid extends Debris {
 	}
 	
 	@Override
-	public void hit(GameState gs) {
-		super.hit(gs);
+	public void hit(GameState gs, Entity hitBy) {
+		super.hit(gs, hitBy);
 		for(int i = 0; i < 20; i++) {
 			gs.addEntity(new Part(x, y, vector.x, vector.y, Math.random() * 360, 0.015f + Math.random() / 150f));
 		}
 	}
 	
-	private class Part implements Entity {
+	public class Part implements Entity {
 		
-		private float x, y, dx, dy;
-		
+		private float x, y, dx, dy, friction = 0.999f;
+
 		public Part(float x, float y, float asteroidDx, float asteroidDy, double direction, double speed) {
 			this.x = x;
 			this.y = y;
@@ -67,8 +67,8 @@ public class Asteroid extends Debris {
 			dx += vector.x;
 			dy += vector.y;
 			if(!planet.isHit()) {
-				dx *= 0.999f;
-				dy *= 0.999f;
+				dx *= friction;
+				dy *= friction;
 			}
 			x += dx * delta;
 			y += dy * delta;
@@ -77,6 +77,10 @@ public class Asteroid extends Debris {
 				return true;
 			}
 			return false;
+		}
+		
+		public void setFriction(float friction) {
+			this.friction = friction;
 		}
 
 		@Override

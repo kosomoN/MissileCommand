@@ -43,7 +43,7 @@ public abstract class Debris implements Entity {
 		
 		if(!isHit && (planet.getX() - x) * (planet.getX() - x) + (planet.getY() - y) * (planet.getY() - y) < radiusPlusPlanetRadiusSquared && !planet.isHit()) {
 			gs.planetHit(this);
-			hit(gs);
+			hit(gs, null);
 		}
 		return false;
 	}
@@ -56,7 +56,7 @@ public abstract class Debris implements Entity {
 		return y;
 	}
 	
-	public void hit(GameState gs) {
+	public void hit(GameState gs, Entity hitBy) {
 		isHit  = true;
 	}
 

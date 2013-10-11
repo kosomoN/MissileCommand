@@ -63,7 +63,7 @@ public class Turret implements Weapon {
 		for(Debris debris : gs.getDebris()) {
 			for(Iterator<Satellite> iterator = satellites.iterator(); iterator.hasNext();) {
 				if(debris.getBoundingCircle().intersects(iterator.next().getBoundingCircle())) {
-					debris.hit(gs);
+					debris.hit(gs, null);
 					iterator.remove();
 					break;
 				}

@@ -68,7 +68,7 @@ public class Nuke extends Ware implements Weapon {
 			c.setRadius(c.getRadius() + 0.5f);
 			c.setCenterX(planet.getX());
 			c.setCenterY(planet.getY());
-			isOnScreen = c.getRadius() * c.getRadius() * 4 > Math.pow(container.getWidth(), 2) + Math.pow(container.getHeight(), 2) / State.getScale();
+			isOnScreen = c.getRadius() * c.getRadius() * 4 > Math.pow(container.getWidth(), 2) + Math.pow(container.getHeight(), 2) / State.SCALE;
 		}
 		return isOnScreen;
 	}
@@ -77,7 +77,7 @@ public class Nuke extends Ware implements Weapon {
 		if(isOnScreen) {
 			for(Debris d : deb) {
 				if(Math.pow(c.getCenterX() - d.getX(), 2) + Math.pow(c.getCenterY() - d.getY(), 2) < Math.pow(c.getRadius() + d.getBoundingCircle().getRadius(), 2)) {
-					d.hit(gs);
+					d.hit(gs, null);
 					return true;
 				}
 			}

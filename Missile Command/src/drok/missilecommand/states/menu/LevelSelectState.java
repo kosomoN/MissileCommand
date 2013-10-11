@@ -30,13 +30,12 @@ public class LevelSelectState extends State {
 
 	private static final int AREA_WIDTH = 2048, AREA_HEIGHT = 2048;
 	private static final float MAX_ZOOM_OUT = 0.25f;
-	private static Image moonImg, mask;
-	private int clicksAfterDragged;
+	private static Image moonImg, mask16, mask32;
 	private Button back;
 	private float zoomLevel = 1;
 	private float camPosx, camPosy;
 	private float initialCamX, initialCamY, goToX, goToY, initialZoom, camT;
-	private boolean isMovingCam, dragging;
+	private boolean isMovingCam;
 	private List<Point> stars = new ArrayList<Point>();
 	private List<LevelSelectPlanet> planets = new ArrayList<LevelSelectPlanet>();
 	private float moonInfoTimer;
@@ -56,7 +55,8 @@ public class LevelSelectState extends State {
 								(int) (Math.random() *(AREA_HEIGHT + container.getHeight() / MAX_ZOOM_OUT) -  + container.getHeight() / 2 / MAX_ZOOM_OUT));
 			stars.add(p);
 		}
-		mask = ResourceManager.getImage("Planet Mask.png");
+		mask16 = ResourceManager.getImage("Planet Mask 16.png");
+		mask32 = ResourceManager.getImage("Planet Mask 32.png");
 		moonImg = ResourceManager.getImage("Moon.png");
 		moonImg = moonImg.getScaledCopy(SCALE / 2);
 		back = new Button(10, 10, ResourceManager.getImage("BackButton.png").getWidth(), ResourceManager.getImage("BackButton.png").getHeight(), ResourceManager.getImage("BackButton.png"), 1);
@@ -115,6 +115,7 @@ public class LevelSelectState extends State {
 		super.enter(container, game);
 		camPosx = AREA_WIDTH / 2;
 		camPosy = AREA_HEIGHT / 2;
+		zoomLevel = MAX_ZOOM_OUT;
 		for(LevelSelectPlanet p : planets) {
 			for(Moon m : p.moons)
 				m.level.restart();
@@ -126,15 +127,13 @@ public class LevelSelectState extends State {
 		g.scale(zoomLevel, zoomLevel);
 		g.translate(-camPosx + container.getWidth() / 2 / zoomLevel, -camPosy + container.getHeight() / 2 / zoomLevel);
 		super.render(container, game, g);
-		
-		for(LevelSelectPlanet planet : planets)
-			planet.render();
-		
+				
 		for(Point p : stars) {
 			g.fillRect(p.x, p.y, 4, 4);
 		}
-
-
+		
+		for(LevelSelectPlanet planet : planets)
+			planet.render();
 		
 		g.resetTransform();
 		
@@ -172,27 +171,27 @@ public class LevelSelectState extends State {
 		g.setColor(Color.white);
 		x += 15;
 		int textY = y + 30; 
-		doneRenderingInfo = Util.renderTextLineWithRandomCharAtEnd("Name: " + moon.name, g, 1f, x, textY, y, moonInfoTimer);
+		renderMoonInfoLine(g, x, textY, y, "Name: " + moon.name);
 		
-		String str;
+		int debrisCount = 0;
 		for(Spawnable sp : moon.level.getSpawnables()) {
-			textY += 30;
-			str = sp.getAmount() + " " + sp.getSpawnTypeName() + (sp.getAmount() > 1 ? "'s" : "");
-			doneRenderingInfo = Util.renderTextLineWithRandomCharAtEnd(str, g, 1f, x, textY, y, moonInfoTimer);
+			debrisCount += sp.getAmount();
 		}
-		
 		textY += 30;
-		doneRenderingInfo = Util.renderTextLineWithRandomCharAtEnd("Missiles: " + moon.level.getMissileCount(), g, 1f, x, textY, y, moonInfoTimer);
+		renderMoonInfoLine(g, x, textY, y, debrisCount + " Debris");
+		textY += 30;
+		int highscore = getCurrentSave().getHighscore(moon.level);
+		renderMoonInfoLine(g, x, textY, y, "Highscore: " + (highscore != -1 ? highscore : "Not completed"));
+		/*
+		textY += 30;
+		renderMoonInfoLine(g, x, textY, y, "Missiles: " + moon.level.getMissileCount());
 		
 		textY += 30;
 		str = "Rate: " + (1000d / moon.level.getSpawnTime()) + "/s";
-		doneRenderingInfo = Util.renderTextLineWithRandomCharAtEnd(str, g, 1f, x, textY, y, moonInfoTimer);
-		
-		if(!doneRenderingInfo && moonInfoTimer % 1 < 0.2)
-			beepSound.play();
+		renderMoonInfoLine(g, x, textY, y, str);*/
 	}
 	
-	/*private void renderTextLineWithRandomCharAtEnd(Graphics g, int x, int textY, int y, String str) {
+	private void renderMoonInfoLine(Graphics g, int x, int textY, int y, String str) {
 		if(moonInfoTimer - ((textY - y) / 15) >= 0 ) {
 			if((moonInfoTimer - ((textY - y) / 15) < str.length())) {
 				g.drawString(str.substring(0, (int) moonInfoTimer - ((textY - y) / 15)) + (char)(Math.random() * 26 + 'a'), x, textY);
@@ -200,8 +199,9 @@ public class LevelSelectState extends State {
 			} else
 				g.drawString(str, x, textY);
 			
+			
 		}
-	}*/
+	}
 	
 	private float cosInterpolation(float x1, float x2, float t) {
 	   double t2 = (1 - Math.cos(t * Math.PI)) / 2;
@@ -240,6 +240,8 @@ public class LevelSelectState extends State {
 		for(LevelSelectPlanet planet : planets)
 			planet.update();
 		moonInfoTimer += 0.2f;
+		if(!doneRenderingInfo && moonInfoTimer % 1 < 0.2)
+			beepSound.play();
 		
 		if(!hasRenderedMoonInfo) {
 			moonInfoTimer = 0;
@@ -265,22 +267,16 @@ public class LevelSelectState extends State {
 			game.enterState(Launch.SHOPSTATE);
 		}
 		
-		
 		if(back.hoverOver(container.getInput().getMouseX(), container.getInput().getMouseY())) {
 			back.changeImage(ResourceManager.getImage("BackButtonHover.png"));
-			if(!dragging)
-				if(back.clicked(container))
-					game.enterState(Launch.MENUSTATE);
 		} else {
 			back.changeImage(ResourceManager.getImage("BackButton.png"));
 		}
 	}
-
+	
 	@Override
 	public void mouseDragged(int oldx, int oldy, int newx, int newy) {
 		super.mouseDragged(oldx, oldy, newx, newy);
-		dragging = true;
-		clicksAfterDragged = 0;
 		if(!isMovingCam) {
 			camPosx += (oldx - newx) / zoomLevel;
 			camPosy += (oldy - newy) / zoomLevel;
@@ -304,6 +300,10 @@ public class LevelSelectState extends State {
 	@Override
 	public void mouseClicked(int button, int x, int y, int clickCount) {
 		super.mouseClicked(button, x, y, clickCount);
+		
+		if(back.hoverOver(container.getInput().getMouseX(), container.getInput().getMouseY())) {
+			game.enterState(Launch.MENUSTATE);
+		}
 		
 		x /= zoomLevel;
 		y /= zoomLevel;
@@ -333,19 +333,7 @@ public class LevelSelectState extends State {
 			}
 		}
 	}
-
-	@Override
-	public void mouseReleased(int button, int x, int y) {
-		super.mousePressed(button, x, y);
-		if(dragging) {
-			clicksAfterDragged++;
-			if(clicksAfterDragged > 0) {
-				clicksAfterDragged = 0;
-				dragging = false;
-			}
-		}
-	}
-
+	
 	private class LevelSelectPlanet {
 		private List<Moon> moons = new ArrayList<Moon>();
 		public float x, y;
@@ -356,8 +344,8 @@ public class LevelSelectState extends State {
 		private String name;
 		
 		public LevelSelectPlanet(String name, float x, float y) {
+			planetTexture = ResourceManager.getImage("Planet " + name + " Texture.png");
 			try {
-				planetTexture = ResourceManager.getImage("Planet " + name + " Texture.png");
 				planetImg = new Image(planetTexture.getHeight(), planetTexture.getHeight());
 				planetImg.setFilter(Image.FILTER_NEAREST);
 			} catch (SlickException e) {
@@ -390,7 +378,7 @@ public class LevelSelectState extends State {
 			timer++;
 			if(timer > 50) {
 				imgPos += 1;
-				if(imgPos >= 32)
+				if(imgPos >= planetTexture.getWidth())
 					imgPos = 0;
 				createImg();
 
@@ -402,11 +390,14 @@ public class LevelSelectState extends State {
 			try {
 				Graphics g = planetImg.getGraphics();
 				g.clear();
-				g.drawImage(mask, 0, 0);
+				if(planetImg.getHeight() == 16)
+					g.drawImage(mask16, 0, 0);
+				else
+					g.drawImage(mask32, 0, 0);
 				g.setDrawMode(Graphics.MODE_COLOR_MULTIPLY);
 				g.drawImage(planetTexture, -imgPos, 0);
-				if(imgPos > 16)
-					g.drawImage(planetTexture, -imgPos + 32, 0);
+				if(imgPos > planetTexture.getWidth() / 2)
+					g.drawImage(planetTexture, -imgPos + planetTexture.getWidth(), 0);
 				g.flush();
 			} catch (SlickException e) {
 				e.printStackTrace();
@@ -445,13 +436,13 @@ public class LevelSelectState extends State {
 		private void update() {
 			if(!stop) {
 				angle += rotSpeed;
-				x = (float) (planet.x - circleRadius * Math.cos(Math.toRadians(angle)));
+				x = (float) (planet.x + circleRadius * Math.cos(Math.toRadians(angle)));
 				y = (float) (planet.y + circleRadius * Math.sin(Math.toRadians(angle)));
 			}
 		}
 		
 		private void render() {
-			moonImg.draw(x - moonImg.getWidth() / 2, y - moonImg.getHeight() / 2, new Color(0.3f, 0.3f, 0.3f, zoomLevel));
+			moonImg.draw(x - moonImg.getWidth() / 2, y - moonImg.getHeight() / 2, new Color(0.3f, 0.3f, 0.3f, zoomLevel * 2 - 1));
 			if(stop)
 				stop = false;
 		}

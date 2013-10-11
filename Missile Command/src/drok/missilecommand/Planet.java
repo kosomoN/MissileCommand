@@ -25,6 +25,7 @@ public class Planet {
 	private boolean isHit;
 	
 	private List<Part> parts = new ArrayList<Part>();
+	private float gravity = 0.0002f;
 
 	public Planet(int x, int y, String name) {
 		this.x = x;
@@ -37,7 +38,7 @@ public class Planet {
 		planet = new Image(16, 16);
 		planet.setFilter(Image.FILTER_NEAREST);
 		
-		mask = ResourceManager.getImage("Planet Mask.png");
+		mask = ResourceManager.getImage("Planet Mask 16.png");
 	}
 	
 	public void render(Graphics g) {
@@ -61,7 +62,7 @@ public class Planet {
 				try {
 					Graphics g = planet.getGraphics();
 					g.clear();
-					g.drawImage(mask, 0, 0, planet.getHeight(), planet.getHeight(), 0, 0, mask.getWidth(), mask.getHeight());
+					g.drawImage(mask, 0, 0);
 					g.setDrawMode(Graphics.MODE_COLOR_MULTIPLY);
 					g.drawImage(planetTexture, -imgPos, 0);
 					g.drawImage(planetTexture, -imgPos + 32, 0);
@@ -102,8 +103,8 @@ public class Planet {
 	public Vector2f getGravitationVector(float x, float y) {
 		if(!isHit) {
 			float dir = (float) Math.toDegrees(Math.atan2(this.y - y, this.x - x));
-			gravityVector.x = (float) Math.cos(Math.toRadians(dir)) * 0.0002f;
-			gravityVector.y = (float) Math.sin(Math.toRadians(dir)) * 0.0002f;
+			gravityVector.x = (float) Math.cos(Math.toRadians(dir)) * gravity;
+			gravityVector.y = (float) Math.sin(Math.toRadians(dir)) * gravity;
 		} else {
 			gravityVector.x = 0;
 			gravityVector.y = 0;
@@ -124,10 +125,10 @@ public class Planet {
 				parts.add(new Part(x + i - 8, y + j - 8, Math.random() * 360, 0.005f + Math.random() / 90f, c));
 			}
 		}
-	}	
+	}
 	
-	public float getRadius() {
-		return planet.getWidth() / 2;
+	public void setGravity(float gravity) {
+		this.gravity = gravity;
 	}
 	
 	private class Part {
@@ -173,5 +174,9 @@ public class Planet {
 			dx = (initialPosX - x) / 6300;
 			dy = (initialPosY - y) / 6300;
 		}
+	}
+
+	public float getRadius() {
+		return 8;
 	}
 }

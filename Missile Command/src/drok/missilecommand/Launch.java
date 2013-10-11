@@ -37,6 +37,7 @@ public class Launch extends StateBasedGame {
 
 	@Override
 	public void initStatesList(GameContainer container) throws SlickException {
+		loadProperties(container);
 		State.init(container);
 		addState(new LoadingState(LOADINGSTATE));
 		addState(new MenuState(MENUSTATE));
@@ -85,9 +86,8 @@ public class Launch extends StateBasedGame {
 	public static void main(String[] args) throws SlickException {
 		AppGameContainer app = new AppGameContainer(new Launch());
 //		app.setDisplayMode(app.getScreenWidth(), app.getScreenHeight(), true);
-		app.setDisplayMode(700, 600, false);
+		app.setDisplayMode(1080, 720, false);
 		app.setTargetFrameRate(60);
-		loadProperties(app);
 //		app.setVSync(true);
 		app.setMaximumLogicUpdateInterval(10);
 		app.setMinimumLogicUpdateInterval(10);
