@@ -1,6 +1,5 @@
 package drok.missilecommand.states.game;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -22,17 +21,22 @@ import drok.missilecommand.weapons.Nuke;
 import drok.missilecommand.weapons.Probe;
 
 public class ShopState extends State {
-	//Fields
-	private List<Ware> wares = new ArrayList<Ware>();
-	private List<Ware> supplements = new ArrayList<Ware>();
-	private List<Ware> upgrades = new ArrayList<Ware>();
+	//TODO
+	/* 1. Unupgradeable wares can be stacked
+	*/
 	
-	private int shieldLevel;
+	//Fields
+	private List<Ware> wares = new LinkedList<Ware>();
 	private List<Button> buttons = new LinkedList<Button>();
+	
 	private Input input;
 	private Button buy, back;
 	private int selectedBtnIndex;
-	private int money = 0;
+	private int money = 50;
+	
+	public enum Wares {
+		SHIELD, PROBE, NUKE;
+	}
 	
 	public ShopState(int state) {
 		super(state);
@@ -42,32 +46,47 @@ public class ShopState extends State {
 	public void firstTimeEnter() throws SlickException {
 		super.firstTimeEnter();
 		input = container.getInput();
-		buy = new Button(container.getWidth() * 3 / 4 - 100, container.getHeight() * 3 / 4 + 3, 100, 30, "BUY", Color.green, Color.white);
+		buy = new Button(container.getWidth() * 3 / 4 - 100, container.getHeight() * 3 / 4 + 23, 100, 30, "BUY", Color.green, Color.white);
 		back = new Button(10, 10, ResourceManager.getImage("BackButton.png").getWidth(), ResourceManager.getImage("BackButton.png").getHeight(), ResourceManager.getImage("BackButton.png"), 1);
-		shieldLevel = 1;
-		upgrades.clear();
 	}
 
 	@Override
 	public void enter(GameContainer container, StateBasedGame game) throws SlickException {
 		super.enter(container, game);
+		getItemHandler().clear();
+		getItemHandler().addItems(getCurrentSave().getItemsAsWares());
+		
+		
 		//How mouch money do you have
 		money += ((LevelBasedGameState) game.getState(Launch.LEVELGAMESTATE)).getScore();
 		
 		int buttonAmount;
-		for(Ware w : wares)
-			if(w.getName().equals("Shield"))
-				shieldLevel = w.getLevel();
 		
 		//Clearing lists
 		buttons.clear();
 		wares.clear();
-		supplements.clear();
 		
 		//Adding wares to the list
-		wares.add(new Shield(((LevelBasedGameState) game.getState(Launch.LEVELGAMESTATE)).getPlanet(), shieldLevel, ResourceManager.getImage("Shield.png"), (LevelBasedGameState) game.getState(Launch.LEVELGAMESTATE)));
-		wares.add(new Probe(container.getWidth() / 2, container.getHeight() / 2, (LevelBasedGameState) game.getState(Launch.LEVELGAMESTATE), 5000));
-		wares.add(new Nuke(((LevelBasedGameState) game.getState(Launch.LEVELGAMESTATE)).getPlanet(), container, (LevelBasedGameState) game.getState(Launch.LEVELGAMESTATE)));
+		wares.add(new Shield(ResourceManager.getImage("Shield.png")));
+		wares.add(new Probe());
+		wares.add(new Nuke());
+		
+		for(Ware w : getItemHandler().getItems()) {
+			for(int i = 0; i < wares.size(); i++) {
+				if(w.getName().equals(wares.get(i).getName())) {
+					wares.add(i, w);
+					wares.remove(i + 1);
+					System.out.println("changed to: " + w.getName());
+					break;
+				} else if(w instanceof Shield) {
+					if(w.getClass().equals(wares.get(i).getClass())) {
+						wares.add(i, w);
+						wares.remove(i + 1);
+						break;
+					}
+				}
+			}
+		}
 		
 		//Adding atleast 10 buttons
 		if(wares.size() < 10)
@@ -80,12 +99,15 @@ public class ShopState extends State {
 			else	//Buttons with wares
 				buttons.add(new Button(container.getWidth() / 4, container.getHeight() / 4 + i * container.getHeight() / 20, container.getWidth() / 4, container.getHeight() / 20, wares.get(i).getName(), new Color(10, 10, 10), Color.white));
 		}
+		
+		buttons.get(0).setSelected(true);
 	}
 	
 	
 
 	@Override
 	public void render(GameContainer container, StateBasedGame game, Graphics g) throws SlickException {
+		g.setColor(Color.white);
 		//Changing color of the button upon hoover, and changing Ware information
 		for(int i = 0; i < buttons.size(); i++) {
 			if(buttons.get(i).isSelected()) {
@@ -94,38 +116,60 @@ public class ShopState extends State {
 					if(buttons.get(i).getText().equalsIgnoreCase(wares.get(j).getName())) {
 						Util.drawLines(g, font16, wares.get(j).getDescription(font16, container.getWidth() / 4 - 40), container.getWidth() / 2 + 20, container.getHeight() / 4 + 20);
 						Util.drawLines(g, font16, "Price: " + wares.get(j).getPrice(), container.getWidth() * 3 / 4 -  font16.getWidth("Price: " + wares.get(j).getPrice()) - 10, container.getHeight() * 3 / 4 - font16.getHeight() - 10);
+						Util.drawLines(g, font16, "Owned: " + getWareAmount(getItemHandler().getItems(), wares.get(selectedBtnIndex)), container.getWidth() * 3 / 4 -  font16.getWidth("Owned: " + getWareAmount(getItemHandler().getItems(), wares.get(selectedBtnIndex))) - 10, container.getHeight() * 3 / 4 - 2 * font16.getHeight() - 15);
 					}
 				}
 			}
 			buttons.get(i).render(g, font16);
 		}
+		
+		//Drawing outline
+		g.drawRoundRect(container.getWidth() / 4 - 10, container.getHeight() / 4 - 10, container.getWidth() / 2 + 20, container.getHeight() / 2 + 20, 20);
 		g.drawRect(container.getWidth() / 4, container.getHeight() / 4, container.getWidth() / 2, container.getHeight() / 2);
+		
+		//Draws money amount
 		font16.drawString(container.getWidth() / 4, container.getHeight() / 4 - font16.getHeight() - 10,"Money: " + money);
 		buy.render(g, font16);
 		back.render(g);
+		
+		//Draws pop-up for buy button
+		if(buy.hoverOver(input.getMouseX(), input.getMouseY())) {
+			if(wares.get(selectedBtnIndex).isMaxUpgraded()) {
+				g.setColor(Color.gray);
+				g.fillRect(input.getMouseX(), input.getMouseY() - font12.getHeight(), font12.getWidth("Fully Upgraded") + 2, font12.getHeight());
+				font12.drawString(input.getMouseX() + 1, input.getMouseY() - font12.getHeight(), "Fully Upgraded");
+			}
+		}
 	}
 
 	@Override
 	public void update(GameContainer container, StateBasedGame game, int delta) throws SlickException {
 		handleButtons();
 		
-		if(wares.size() > 0 && selectedBtnIndex < wares.size() && money >= wares.get(selectedBtnIndex).getPrice()) {
-			for(Ware w : upgrades) {
-				if(wares.get(selectedBtnIndex).isUpgradeable() && w.getClass().equals(wares.get(selectedBtnIndex).getClass())) {
-					buy.setText("UPGRADE");
-					break;
-				} else if(upgrades.indexOf(w) + 1 == upgrades.size()) {
-					buy.setText("BUY");
+		//Handling buy button
+		buy.setColor(new Color(10, 10, 10));
+		buy.setText("BUY");
+		
+		if(wares.size() > 0 && selectedBtnIndex < wares.size()) {
+			if(money >= wares.get(selectedBtnIndex).getPrice()) {
+				buy.setColor(Color.green);
+			} else {
+				buy.setColor(new Color(10, 10, 10));
+			}
+			
+			if(getItemHandler().getItem(wares.get(selectedBtnIndex)).isUpgradeable()) {
+				buy.setText("UPGRADE");
+				if(getItemHandler().getItem(wares.get(selectedBtnIndex)).isMaxUpgraded()) {
+					buy.setColor(new Color(10, 10, 10));
 				}
 			}
 			
-			
-			if(buy.clicked(container))
+			if(buy.clicked(container)) {
 				buy(selectedBtnIndex);
-		} else {
-			buy.setColor(new Color(10, 10, 10));
+			}
 		}
 		
+		//Updating back button
 		if(back.hoverOver(input.getMouseX(), input.getMouseY())) {
 			back.changeImage(ResourceManager.getImage("BackButtonHover.png"));
 			if(back.clicked(container))
@@ -135,12 +179,26 @@ public class ShopState extends State {
 		}
 	}
 	
+	private int getWareAmount(List<Ware> list, Ware ware) {
+		int amount = 0;
+		
+		for(Ware w : list) {
+			if(w.equals(ware)) {
+				amount++;
+			}
+		}
+		
+		return amount;
+	}
+	
 	/**
 	 * Handles updating of ware buttons
 	 */
 	private void handleButtons() {
 		for(int i = 0; i < buttons.size(); i++) {
 			Button btn = buttons.get(i);
+			if(i < wares.size())
+				btn.setText(wares.get(i).getName());
 			
 			if(btn.hoverOver(input.getMouseX(), input.getMouseY())) {
 				//Makes button light grey
@@ -172,50 +230,43 @@ public class ShopState extends State {
 		//Variables
 		Ware ware = wares.get(index);
 		
-		//Checks if ware should be bought or upgraded
-		if(ware.isUpgradeable() && upgrades.contains(ware)) {
-			upgrades.get(upgrades.indexOf(ware)).upgrade();
-		} else {
-			//Removes button
-			buttons.remove(index);
-			
-			//Moves and sets all buttons to not selected
-			for(Button b : buttons) {
-				b.setSelected(false);
-				if(buttons.indexOf(b) >= index)
-					b.setY(b.getY() - b.getHeight());
-			}
-			
-			//Adding button
-			if(wares.size() < 10)
-				buttons.add(buttons.size(), new Button(container.getWidth() / 4, container.getHeight() / 4 + 9 * container.getHeight() / 20, container.getWidth() / 4, container.getHeight() / 20, "-", new Color(10, 10, 10), Color.white));
-			else
-				buttons.add(new Button(container.getWidth() / 4, container.getHeight() / 4 + (wares.size() - 1) * container.getHeight() / 20, container.getWidth() / 4, container.getHeight() / 20, "-", new Color(10, 10, 10), Color.white));
-			
+		if(money >= ware.getPrice()) {
 			//Decrease money amount
 			money -= ware.getPrice();
 			
-			//Add a ware to bought or upgrades list
-			if(ware.isUpgradeable()) {
-				upgrades.add(ware);
-			} else {
-				supplements.add(ware);
+			//Checks if ware should be bought or upgraded
+			if(ware.isUpgradeable() && !ware.isMaxUpgraded()) {
+				if(getItemHandler().isOwned(ware)) {
+					getItemHandler().getItem(ware).upgrade();
+					wares.add(selectedBtnIndex, getItemHandler().getItem(ware));
+					wares.remove(selectedBtnIndex + 1);
+				} else {
+					getItemHandler().addItem(ware);
+				}
+			} else if(!ware.isUpgradeable()) {				
+				/*//Moves and sets all buttons to not selected
+				for(Button b : buttons) {
+					b.setSelected(false);
+					if(buttons.indexOf(b) >= index)
+						b.setY(b.getY() - b.getHeight());
+				}
+				
+				//Adding button
+				if(wares.size() < 10)
+					buttons.add(buttons.size(), new Button(container.getWidth() / 4, container.getHeight() / 4 + 9 * container.getHeight() / 20, container.getWidth() / 4, container.getHeight() / 20, "-", new Color(10, 10, 10), Color.white));
+				else
+					buttons.add(new Button(container.getWidth() / 4, container.getHeight() / 4 + (wares.size() - 1) * container.getHeight() / 20, container.getWidth() / 4, container.getHeight() / 20, "-", new Color(10, 10, 10), Color.white));
+				*/
+				
+				//Add a ware to owned items
+				getItemHandler().addItem(ware);
+				
+				ware = null;
 			}
-			
-			//Removing the ware from the wares list
-			wares.remove(ware);
-			ware = null;
-			
-			//Sets first ware to selected
-			buttons.get(0).setSelected(true);
 		}
 	}
 	
-	public List<Ware> getSuplementWares() {
-		return supplements;
-	}
-	
-	public List<Ware> getUpgrades() {
-		return upgrades;
+	public List<Ware> getWares() {
+		return wares;
 	}
 }

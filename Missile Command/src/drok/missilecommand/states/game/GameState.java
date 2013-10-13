@@ -35,7 +35,6 @@ public abstract class GameState extends State {
 	private List<Point> stars = new ArrayList<Point>();
 	private List<Ware> wares = new ArrayList<Ware>();
 	protected Planet planet;
-	protected Nuke nuke;
 	private Turret turret;
 	protected int missiles;
 	private int partsCollected;
@@ -75,14 +74,19 @@ public abstract class GameState extends State {
 		HeavyFighter.init();
 		
 		turret = new Turret(planet, 5);
+		
+		getItemHandler().clear();
+		getItemHandler().addItems(getCurrentSave().getItemsAsWares());
 	}
 
 	@Override
 	public void enter(GameContainer container, StateBasedGame game) throws SlickException {
 		super.enter(container, game);
-		wares.addAll(((ShopState) game.getState(Launch.SHOPSTATE)).getSuplementWares());
-		wares.addAll(((ShopState) game.getState(Launch.SHOPSTATE)).getUpgrades());
-		nuke = new Nuke(planet, container, this);
+		wares.clear();
+		wares.addAll(getItemHandler().getItems());
+		for(Ware w : wares) {
+			w.setGameState(this);
+		}
 		restart();
 	}
 
@@ -247,6 +251,10 @@ public abstract class GameState extends State {
 
 	public List<Debris> getDebris() {
 		return debris;
+	}
+	
+	public List<Ware> getWares() {
+		return wares;
 	}
 
 	public GameContainer getContainer() {

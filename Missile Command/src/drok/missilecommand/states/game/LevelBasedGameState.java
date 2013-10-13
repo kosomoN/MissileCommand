@@ -1,5 +1,8 @@
 package drok.missilecommand.states.game;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
@@ -14,6 +17,7 @@ import drok.missilecommand.Level;
 import drok.missilecommand.Planet;
 import drok.missilecommand.debris.Asteroid;
 import drok.missilecommand.debris.Debris;
+import drok.missilecommand.upgrades.Ware;
 import drok.missilecommand.utils.ResourceManager;
 import drok.missilecommand.utils.Util;
 
@@ -48,6 +52,9 @@ public class LevelBasedGameState extends GameState {
 	public void enter(GameContainer container, StateBasedGame game) throws SlickException {
 		planet = new Planet(container.getWidth() / 2 / SCALE, container.getHeight() / 2 / SCALE, level.getPlanetName());
 		super.enter(container, game);
+		for(Ware w : getWares()) {
+			w.init(planet, this);
+		}
 		resetIntro();
 	}
 
@@ -156,8 +163,18 @@ public class LevelBasedGameState extends GameState {
 	
 	private void save() {
 		System.out.println("Saving");
+		List<String> tempList = new ArrayList<String>();
 		hasSaved = true;
 		wasHighscore = getCurrentSave().setHighscore(level.getName(), (int) score);
+		for(Ware ware : getItemHandler().getItems()) {
+			tempList.add(Integer.toString(ware.getLevel()));
+			tempList.add(Integer.toString(ware.getPrice()));
+			tempList.add(Boolean.toString(ware.isUpgradeable()));
+			tempList.add(Boolean.toString(ware.isMaxUpgraded()));
+			
+			getCurrentSave().setItem(ware.getName(), tempList);
+			tempList.clear();
+		}
 		getCurrentSave().save();
 	}
 	
@@ -227,7 +244,8 @@ public class LevelBasedGameState extends GameState {
 		} else if(countdown <= 1000){
 			super.mousePressed(button, x, y);
 			if(gameOverColor.a > 0.7) {
-				game.enterState(Launch.LEVELSELECTSTATE);
+				score = debrisScore + scoreFromMissiles;
+				game.enterState(Launch.SHOPSTATE);
 			}
 		}
 	}

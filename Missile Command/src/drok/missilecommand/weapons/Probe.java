@@ -5,6 +5,7 @@ import java.util.List;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 
+import drok.missilecommand.Planet;
 import drok.missilecommand.debris.Debris;
 import drok.missilecommand.states.game.GameState;
 import drok.missilecommand.upgrades.Ware;
@@ -25,14 +26,35 @@ public class Probe extends Ware implements Weapon {
 		this.y = y;
 		this.gs = gs;
 		debris = gs.getDebris();
-		Probe.fireRate = fireRate;
+		Probe.fireRate = 5000;
+		description = "A defense probe which will shoot asteroids for you. Fire Rate: " + fireRate / 1000 + "s";
+	}
+	
+	public Probe() {
+		description = "A defense probe which will shoot asteroids for you. Fire Rate: " + fireRate / 1000 + "s";
+	}
+	
+	@Override
+	public void refresh() {
+		fireRate = 5000 - level * 1000;
 		description = "A defense probe which will shoot asteroids for you. Fire Rate: " + fireRate / 1000 + "s";
 	}
 	
 	public static void init() {
 		probeImg = ResourceManager.getImage("Probe.png");
 	}
-
+	
+	@Override
+	public void init(Planet planet, GameState gs) {
+		this.gs = gs;
+		debris = gs.getDebris();
+	}
+	
+	@Override
+	public void render(Graphics g) {
+		probeImg.drawCentered(x, y);
+	}
+	
 	public boolean update(int delta) {
 		angle += 0.05 * delta;
 		x = (float) (gs.getPlanet().getX() - 30 * Math.cos(Math.toRadians(angle)));
@@ -56,10 +78,12 @@ public class Probe extends Ware implements Weapon {
 		
 		return false;
 	}
-	
+
 	@Override
-	public void render(Graphics g) {
-		probeImg.drawCentered(x, y);
+	public void upgrade() {
+		super.upgrade();
+		fireRate = 5000 - level * 1000;
+		description = "A defense probe which will shoot asteroids for you. Fire Rate: " + fireRate / 1000 + "s";
 	}
 
 	@Override
@@ -78,12 +102,22 @@ public class Probe extends Ware implements Weapon {
 	}
 
 	@Override
-	public int getLevel() {
-		return 1;
+	public float getX() {
+		return x;
 	}
 
 	@Override
+	public float getY() {
+		return y;
+	}
+	
+	@Override
 	public boolean isUpgradeable() {
-		return fireRate > 3000;
+		return true;
+	}
+
+	@Override
+	public boolean isMaxUpgraded() {
+		return fireRate == 2000;
 	}
 }

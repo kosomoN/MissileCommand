@@ -20,10 +20,10 @@ public class Shield extends Ware {
 	private String name;
 	private Color color = new Color(1f, 1f, 1f, 1f);
 	
-	public Shield(Planet planet, int durability, Image img, GameState gs) {
+	public Shield(Planet planet, Image img, GameState gs) {
 		this.x = planet.getX();
 		this.y = planet.getY();
-		this.durability = durability;
+		this.durability = level;
 		this.gs = gs;
 		
 		shieldImg = img;
@@ -32,20 +32,33 @@ public class Shield extends Ware {
 		name = "ShieldMK" + durability;
 	}
 	
+	public Shield(Image img) {
+		shieldImg = img;
+		
+		this.durability = level;
+		isDestroyed = false;
+		description = "Protects from " + durability + (durability == 1 ? " hit" : "hits");
+		name = "ShieldMK" + durability;
+	}
+	
+	@Override
+	public void refresh() {
+		durability = level;
+		description = "Protects from " + durability + (durability == 1 ? " hit" : " hits");
+		name = "ShieldMK" + durability;
+	}
+	
+	public void init(Planet planet, GameState gs) {
+		setPos(planet.getX(), planet.getY() + 1);
+		setGameState(gs);
+	}
+	
 	public void render(Graphics g) {
 		if(color.a > 0) {
 			shieldImg.draw(x - shieldImg.getWidth() / 2, y - shieldImg.getHeight() / 2, color);
 		}
 	}
 	
-	public void hit() {
-		durability--;
-	}
-	
-	public boolean isDestroyed() {
-		return isDestroyed;
-	}
-
 	@Override
 	public boolean update(int delta) {
 		if(isDestroyed) {
@@ -63,6 +76,35 @@ public class Shield extends Ware {
 		}
 		return isDestroyed;
 	}
+	
+	public void hit() {
+		durability--;
+	}
+	
+	public boolean isDestroyed() {
+		return isDestroyed;
+	}
+
+	public void setPos(int x, int y) {
+		this.x = x;
+		this.y = y;
+	}
+	
+	public void setImage(Image image) {
+		shieldImg = image;
+	}
+	
+	public void setGameState(GameState gs) {
+		this.gs = gs;
+	}
+	
+	@Override
+	public void upgrade() {
+		super.upgrade();
+		durability = level;
+		name = "ShieldMK" + durability;
+		description = "Protects from " + durability + (durability == 1 ? " hit" : " hits");
+	}
 
 	@Override
 	public String getName() {
@@ -78,14 +120,24 @@ public class Shield extends Ware {
 	public int getPrice() {
 		return 0;
 	}
-
+	
 	@Override
-	public int getLevel() {
-		return 0;
+	public float getX() {
+		return x;
 	}
 
 	@Override
+	public float getY() {
+		return y;
+	}
+	
+	@Override
 	public boolean isUpgradeable() {
-		return durability < 3;
+		return true;
+	}
+	
+	@Override
+	public boolean isMaxUpgraded() {
+		return durability == 3;
 	}
 }

@@ -6,7 +6,6 @@ import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
-import org.newdawn.slick.SlickException;
 import org.newdawn.slick.geom.Circle;
 
 import drok.missilecommand.Planet;
@@ -18,11 +17,10 @@ import drok.missilecommand.upgrades.Ware;
 public class Nuke extends Ware implements Weapon {
 	//Fields
 	private GameContainer container;
-	private Image nukeImg;
 	private Planet planet;
 	private Circle c;
 	private Color color;
-	private boolean rendered, isOnScreen;
+	private boolean isOnScreen;
 	private GameState gs;
 	
 	public Nuke(Planet planet, GameContainer container, GameState gs) {
@@ -33,12 +31,19 @@ public class Nuke extends Ware implements Weapon {
 		isOnScreen = false;
 		color = new Color(255, 115, 0); //200, 30
 		description = "Do you really need an explanation? Destroys all debris";
-		
-		try {
-			nukeImg = new Image((int) (planet.getRadius() * 2), (int) (planet.getRadius() * 2));
-		} catch (SlickException e) {
-			e.printStackTrace();
-		}
+	}
+	
+	public Nuke() {
+		isOnScreen = false;
+		color = new Color(255, 115, 0); //200, 30
+		description = "Do you really need an explanation? Destroys all debris";
+	}
+	
+	@Override
+	public void init(Planet planet, GameState gs) {
+		c = new Circle(0, 0, planet.getRadius());
+		setPos(planet.getX(), planet.getY());
+		this.gs = gs;
 	}
 	
 	@Override
@@ -57,8 +62,6 @@ public class Nuke extends Ware implements Weapon {
 			
 			g.setColor(color);
 			g.draw(c);
-			if(!rendered)
-				g.copyArea(nukeImg, (int) c.getX(), (int) c.getY());
 		}
 	}
 
@@ -97,14 +100,14 @@ public class Nuke extends Ware implements Weapon {
 		return isOnScreen;
 	}
 	
+	public void setPos(int x, int y) {
+		c.setCenterX(x);
+		c.setCenterY(y);
+	}
+	
 	@Override
 	public String getName() {
 		return "Nuke";
-	}
-
-	@Override
-	public Image getImage() {
-		return nukeImg;
 	}
 
 	@Override
@@ -113,12 +116,30 @@ public class Nuke extends Ware implements Weapon {
 	}
 
 	@Override
-	public int getLevel() {
-		return 1;
+	public float getX() {
+		return planet.getX();
 	}
 
+	@Override
+	public float getY() {
+		return planet.getY();
+	}
+	
 	@Override
 	public boolean isUpgradeable() {
 		return false;
 	}
+
+	@Override
+	public boolean isMaxUpgraded() {
+		return false;
+	}
+
+	@Override
+	public Image getImage() {
+		return null;
+	}
+
+	@Override
+	public void refresh() {}
 }

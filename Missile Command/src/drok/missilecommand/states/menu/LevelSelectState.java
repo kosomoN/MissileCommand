@@ -24,7 +24,6 @@ import drok.missilecommand.states.State;
 import drok.missilecommand.states.game.LevelBasedGameState;
 import drok.missilecommand.utils.Button;
 import drok.missilecommand.utils.ResourceManager;
-import drok.missilecommand.utils.Util;
 
 public class LevelSelectState extends State {
 
@@ -113,6 +112,7 @@ public class LevelSelectState extends State {
 	@Override
 	public void enter(GameContainer container, StateBasedGame game) throws SlickException {
 		super.enter(container, game);
+		
 		camPosx = AREA_WIDTH / 2;
 		camPosy = AREA_HEIGHT / 2;
 		zoomLevel = MAX_ZOOM_OUT;

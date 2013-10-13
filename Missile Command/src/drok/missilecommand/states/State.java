@@ -13,6 +13,7 @@ import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
 
 import drok.missilecommand.GameSave;
+import drok.missilecommand.upgrades.ItemHandler;
 
 public abstract class State extends BasicGameState {
 	public static final int SCALE = 6;
@@ -20,14 +21,16 @@ public abstract class State extends BasicGameState {
 	protected GameContainer container;
 	protected StateBasedGame game;
 	protected static Image screenImg;
-	protected static TrueTypeFont font16, font32;
+	protected static TrueTypeFont font12, font16, font32;
 	private static GameSave currentSave;
+	private static ItemHandler handler;
 	protected Music music;
 	private int state;
 	private boolean firstTime = true;
 	
 	@Override
 	public void init(GameContainer container, StateBasedGame game) throws SlickException {
+		handler = new ItemHandler();
 		this.container = container;
 		this.game = game;
 	}
@@ -61,6 +64,7 @@ public abstract class State extends BasicGameState {
 		}
 		try {
 			java.awt.Font awtFont = java.awt.Font.createFont(java.awt.Font.TRUETYPE_FONT, new File("res/fonts/minecraftia.ttf"));
+			font12 = new TrueTypeFont(awtFont.deriveFont(12f), false);
 			font16 = new TrueTypeFont(awtFont.deriveFont(16f), false);
 	        font32 = new TrueTypeFont(awtFont.deriveFont(32f), false);
 		} catch (Exception e) {
@@ -101,5 +105,9 @@ public abstract class State extends BasicGameState {
 
 	protected GameSave getCurrentSave() {
 		return currentSave;
+	}
+	
+	protected ItemHandler getItemHandler() {
+		return handler;
 	}
 }
