@@ -137,7 +137,7 @@ public class LevelSelectState extends State {
 		
 		g.resetTransform();
 		
-		back.render(g);
+		back.renderImage(g);
 		
 		int x = container.getInput().getMouseX();
 		int y = container.getInput().getMouseY();

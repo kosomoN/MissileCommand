@@ -4,12 +4,28 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import drok.missilecommand.GameSave;
+
 public class ItemHandler {
 	//Fields
 	private List<Ware> items = new ArrayList<Ware>();
 	
 	public ItemHandler() {
 		items.clear();
+	}
+	
+	public void save(GameSave save) {
+		List<String> tempList = new ArrayList<String>();
+		save.clearItems();
+		for(Ware ware : getItems()) {
+			tempList.add(Integer.toString(ware.getLevel()));
+			tempList.add(Integer.toString(ware.getPrice()));
+			tempList.add(Boolean.toString(ware.isUpgradeable()));
+			tempList.add(Boolean.toString(ware.isMaxUpgraded()));
+			
+			save.setItem(ware.getName(), tempList);
+			tempList.clear();
+		}
 	}
 	
 	public void addItem(Ware ware) {

@@ -18,6 +18,7 @@ import drok.missilecommand.states.game.EndlessGameState;
 import drok.missilecommand.states.game.LevelBasedGameState;
 import drok.missilecommand.states.game.ShopState;
 import drok.missilecommand.states.menu.GameModeState;
+import drok.missilecommand.states.menu.GameSaveState;
 import drok.missilecommand.states.menu.HelpState;
 import drok.missilecommand.states.menu.LevelSelectState;
 import drok.missilecommand.states.menu.LoadingState;
@@ -27,7 +28,7 @@ public class Launch extends StateBasedGame {
 	//Fields
 	public static final int LOADINGSTATE = 0, MENUSTATE = 1, GAMEMODESTATE = 2,
 							ENDLESSGAMESTATE = 3, HELPSTATE = 4, LEVELGAMESTATE = 5,
-							SHOPSTATE = 6, LEVELSELECTSTATE = 7;
+							SHOPSTATE = 6, LEVELSELECTSTATE = 7, GAMESAVESTATE = 8;
 	
 	public static final Properties PROPERTIES = new Properties();
 	
@@ -47,6 +48,7 @@ public class Launch extends StateBasedGame {
 		addState(new HelpState(HELPSTATE));
 		addState(new ShopState(SHOPSTATE));
 		addState(new LevelSelectState(LEVELSELECTSTATE));
+		addState(new GameSaveState(GAMESAVESTATE));
 	}
 	
 	private static void loadProperties(GameContainer container) {

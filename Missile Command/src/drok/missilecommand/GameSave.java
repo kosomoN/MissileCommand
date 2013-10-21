@@ -196,4 +196,8 @@ public class GameSave {
 		
 		return ware;
 	}
+	
+	public String getName() {
+		return name;
+	}
 }

@@ -111,7 +111,7 @@ public class ShopState extends State {
 		//Changing color of the button upon hoover, and changing Ware information
 		for(int i = 0; i < buttons.size(); i++) {
 			if(buttons.get(i).isSelected()) {
-				buttons.get(i).setColor(new Color(50, 50, 50));
+				buttons.get(i).setBackColor(new Color(50, 50, 50));
 				for(int j = 0; j < wares.size(); j++) {
 					if(buttons.get(i).getText().equalsIgnoreCase(wares.get(j).getName())) {
 						Util.drawLines(g, font16, wares.get(j).getDescription(font16, container.getWidth() / 4 - 40), container.getWidth() / 2 + 20, container.getHeight() / 4 + 20);
@@ -130,7 +130,7 @@ public class ShopState extends State {
 		//Draws money amount
 		font16.drawString(container.getWidth() / 4, container.getHeight() / 4 - font16.getHeight() - 10,"Money: " + money);
 		buy.render(g, font16);
-		back.render(g);
+		back.renderImage(g);
 		
 		//Draws pop-up for buy button
 		if(buy.hoverOver(input.getMouseX(), input.getMouseY())) {
@@ -147,20 +147,20 @@ public class ShopState extends State {
 		handleButtons();
 		
 		//Handling buy button
-		buy.setColor(new Color(10, 10, 10));
+		buy.setBackColor(new Color(10, 10, 10));
 		buy.setText("BUY");
 		
 		if(wares.size() > 0 && selectedBtnIndex < wares.size()) {
 			if(money >= wares.get(selectedBtnIndex).getPrice()) {
-				buy.setColor(Color.green);
+				buy.setBackColor(Color.green);
 			} else {
-				buy.setColor(new Color(10, 10, 10));
+				buy.setBackColor(new Color(10, 10, 10));
 			}
 			
 			if(getItemHandler().getItem(wares.get(selectedBtnIndex)).isUpgradeable()) {
 				buy.setText("UPGRADE");
 				if(getItemHandler().getItem(wares.get(selectedBtnIndex)).isMaxUpgraded()) {
-					buy.setColor(new Color(10, 10, 10));
+					buy.setBackColor(new Color(10, 10, 10));
 				}
 			}
 			
@@ -172,8 +172,11 @@ public class ShopState extends State {
 		//Updating back button
 		if(back.hoverOver(input.getMouseX(), input.getMouseY())) {
 			back.changeImage(ResourceManager.getImage("BackButtonHover.png"));
-			if(back.clicked(container))
+			if(back.clicked(container)) {
+				getItemHandler().save(getCurrentSave());
+				getCurrentSave().save();
 				game.enterState(Launch.LEVELSELECTSTATE);
+			}
 		} else {
 			back.changeImage(ResourceManager.getImage("BackButton.png"));
 		}
@@ -202,7 +205,7 @@ public class ShopState extends State {
 			
 			if(btn.hoverOver(input.getMouseX(), input.getMouseY())) {
 				//Makes button light grey
-				btn.setColor(new Color(1f, 1f, 1f, 0.5f));
+				btn.setBackColor(new Color(1f, 1f, 1f, 0.5f));
 				
 				if(btn.clicked(container)) {
 					//Sets all buttons unselected
@@ -214,7 +217,7 @@ public class ShopState extends State {
 				}
 			} else {//if(btn.getColor().r == 1f) {
 				//Makes button grey
-				btn.setColor(new Color(10, 10, 10));
+				btn.setBackColor(new Color(10, 10, 10));
 			}
 			
 			if(btn.isSelected())

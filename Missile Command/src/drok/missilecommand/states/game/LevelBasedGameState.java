@@ -1,8 +1,5 @@
 package drok.missilecommand.states.game;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
@@ -163,18 +160,10 @@ public class LevelBasedGameState extends GameState {
 	
 	private void save() {
 		System.out.println("Saving");
-		List<String> tempList = new ArrayList<String>();
 		hasSaved = true;
 		wasHighscore = getCurrentSave().setHighscore(level.getName(), (int) score);
-		for(Ware ware : getItemHandler().getItems()) {
-			tempList.add(Integer.toString(ware.getLevel()));
-			tempList.add(Integer.toString(ware.getPrice()));
-			tempList.add(Boolean.toString(ware.isUpgradeable()));
-			tempList.add(Boolean.toString(ware.isMaxUpgraded()));
-			
-			getCurrentSave().setItem(ware.getName(), tempList);
-			tempList.clear();
-		}
+		
+		getItemHandler().save(getCurrentSave());
 		getCurrentSave().save();
 	}
 	

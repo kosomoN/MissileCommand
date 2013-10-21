@@ -32,7 +32,7 @@ public class MenuState extends State {
 		super.init(container, game);
 		input = container.getInput();
 		
-		campaign = new Button(container.getWidth() - 80 - font32.getWidth("Campaign"), container.getHeight() - font32.getLineHeight() * 4 - 40, font32.getWidth("Campaign"), font32.getHeight(), "Campaign", new Color(200, 0, 50, 1f), Color.white);
+		campaign = new Button(container.getWidth() - 80 - font32.getWidth("Campaign"), container.getHeight() - font32.getLineHeight() * 4 - 40, font32.getWidth("Campaign"), font32.getHeight(), "Campaign", new Color(200, 0, 50, 0f), Color.white);
 		arcade = new Button(container.getWidth() - 80 - font32.getWidth("Arcade"), container.getHeight() - font32.getLineHeight() * 3 - 30, font32.getWidth("Arcade"), font32.getHeight(), "Arcade", new Color(20, 0, 50, 0f), Color.white);
 		help = new Button(container.getWidth() - 80 - font32.getWidth("Help"), container.getHeight() - font32.getLineHeight() * 2 - 20, font32.getWidth("Help"), font32.getHeight(), "Help", new Color(20, 0, 50, 0f), Color.white);
 		exit = new Button(container.getWidth() - 80 - font32.getWidth("Exit"), container.getHeight() - font32.getLineHeight() - 10, font32.getWidth("Exit"), font32.getHeight(), "Exit", new Color(20, 0, 50, 0f), Color.white);
@@ -73,33 +73,48 @@ public class MenuState extends State {
 		campaign.renderWithoutBorder(g, font32);
 		help.renderWithoutBorder(g, font32);
 		exit.renderWithoutBorder(g, font32);
-		muteMusic.render(g);
-		muteSound.render(g);
+		muteMusic.renderImage(g);
+		muteSound.renderImage(g);
 	}
 
 	@Override
 	public void update(GameContainer container, StateBasedGame game, int delta) throws SlickException {
+		//*********************** Updating buttons ********************************//
+		
+		//Campaign button
 		if(campaign.hoverOver(input.getMouseX(), input.getMouseY())) {
 			selecty = campaign.getY() + campaign.getHeight() / 4;
 			if(!ignoreClick && campaign.clicked(container)) {
 				//Must check if campaign already started
-				game.enterState(Launch.LEVELSELECTSTATE);
+				game.enterState(Launch.GAMESAVESTATE);
 			}
-		} else if(arcade.hoverOver(input.getMouseX(), input.getMouseY())) {
+		} 
+		
+		//Arcade button
+		else if(arcade.hoverOver(input.getMouseX(), input.getMouseY())) {
 			selecty = arcade.getY() + arcade.getHeight() / 4;
 			if(!ignoreClick && arcade.clicked(container)) {
 				playArcade = true;
 				game.enterState(Launch.GAMEMODESTATE);
 			}
-		} else if(help.hoverOver(input.getMouseX(), input.getMouseY())) {
+		} 
+		
+		//Help button
+		else if(help.hoverOver(input.getMouseX(), input.getMouseY())) {
 			selecty = help.getY() + help.getHeight() / 4;
 			if(!ignoreClick && help.clicked(container))
 				game.enterState(Launch.HELPSTATE);
-		} else if(exit.hoverOver(input.getMouseX(), input.getMouseY())) {
+		} 
+		
+		//Exit button
+		else if(exit.hoverOver(input.getMouseX(), input.getMouseY())) {
 			selecty = exit.getY() + exit.getHeight() / 4;
 			if(!ignoreClick && exit.clicked(container))
 				container.exit();
-		} else if(muteMusic.hoverOver(input.getMouseX(), input.getMouseY())) {
+		} 
+		
+		//Music button
+		else if(muteMusic.hoverOver(input.getMouseX(), input.getMouseY())) {
 			if(muteMusic.clicked(container)) {
 				if(muteMusic.getImage().equals(ResourceManager.getImage("Mute.png"))) {
 					muteMusic.changeImage(ResourceManager.getImage("UnMute.png"));
@@ -109,7 +124,10 @@ public class MenuState extends State {
 					container.setMusicOn(false);
 				}
 			}
-		} else if(muteSound.hoverOver(input.getMouseX(), input.getMouseY())) {
+		} 
+		
+		//Sound button
+		else if(muteSound.hoverOver(input.getMouseX(), input.getMouseY())) {
 			if(muteSound.clicked(container)) {
 				if(muteSound.getImage().equals(ResourceManager.getImage("MuteSound.png"))) {
 					muteSound.changeImage(ResourceManager.getImage("UnMuteSound.png"));
@@ -120,6 +138,8 @@ public class MenuState extends State {
 				}
 			}
 		}
+		
+		//********************************************************************************//
 	}
 
 	@Override

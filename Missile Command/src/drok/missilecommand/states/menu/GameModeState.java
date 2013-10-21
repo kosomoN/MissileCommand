@@ -88,15 +88,15 @@ public class GameModeState extends State {
 			
 			//Drawing arrows and difficulty title
 			g.drawString("Difficulty", container.getWidth() / 2 - g.getFont().getWidth("Difficulty") / 2, container.getHeight() * 2 / 3 - g.getFont().getLineHeight() / 2 - 50);
-			leftArrow.render(g);
-			rightArrow.render(g);
+			leftArrow.renderImage(g);
+			rightArrow.renderImage(g);
 			
 			//Drawing play button and key
 			g.drawString("Play", container.getWidth() / 2 - g.getFont().getWidth("Play") / 2, container.getHeight() - play.getHeight() - 50);
-			play.render(g);
+			play.renderImage(g);
 			
 			//rendering back button
-			back.render(g);
+			back.renderImage(g);
 		}
 	}
 

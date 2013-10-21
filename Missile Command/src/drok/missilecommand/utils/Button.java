@@ -11,18 +11,18 @@ import org.newdawn.slick.geom.Rectangle;
 public class Button {
 	//Fields
 	private float x, y, width, height, scale;
-	private Color color, txtColor;
+	private Color backColor, txtColor;
 	private String text;
 	private Image img;
 	private boolean selected, pressed;
 	
-	public Button(float x, float y, float width, float height, String text, Color color, Color txtColor) {
+	public Button(float x, float y, float width, float height, String text, Color backColor, Color txtColor) {
 		this.x = x;
 		this.y = y;
 		this.width = width;
 		this.height = height;
 		this.text = text;
-		this.color = color;
+		this.backColor = backColor;
 		this.txtColor = txtColor;
 		this.scale = 1;
 	}
@@ -36,13 +36,28 @@ public class Button {
 		this.scale = scale;
 	}
 	
+	public Button(Image img, float scale) {
+		this.img = img;
+		this.scale = scale;
+	}
+	
+	public Button(String text, Color backColor, Color txtColor, int scale) {
+		this.text = text;
+		this.backColor = backColor;
+		this.txtColor = txtColor;
+		this.scale = scale;
+	}
+	
 	public void renderWithoutBorder(Graphics g, Font font) {
+		g.setColor(backColor);
+		g.fillRect(x, y, width, height);
+		
 		g.setColor(txtColor);
-		font.drawString(x, y, text);
+		font.drawString(x + (width - font.getWidth(text)) / 2, y + (height - font.getHeight(text)) / 2, text);
 	}
 	
 	public void render(Graphics g, Font font) {
-		g.setColor(color);
+		g.setColor(backColor);
 		g.fillRect(x, y, width * scale, height * scale);
 		g.setColor(Color.white);
 		g.drawRect(x, y, width * scale, height * scale);
@@ -51,7 +66,7 @@ public class Button {
 		font.drawString(x + (width * scale - font.getWidth(text)) / 2, y + (height * scale - font.getHeight(text)) / 2, text);
 	}
 	
-	public void render(Graphics g) {
+	public void renderImage(Graphics g) {
 		img.draw(x, y, scale);
 	}
 	
@@ -92,8 +107,8 @@ public class Button {
 		return false;
 	}
 	
-	public void setColor(Color color) {
-		this.color = color;
+	public void setBackColor(Color backColor) {
+		this.backColor = backColor;
 	}
 	
 	public void setTextColor(Color txtColor) {
@@ -106,6 +121,11 @@ public class Button {
 	
 	public void setSelected(boolean selected) {
 		this.selected = selected;
+	}
+	
+	public void setDimensions(float width, float height) {
+		this.width = width;
+		this.height = height;
 	}
 	
 	public void setX(float x) {
@@ -141,7 +161,7 @@ public class Button {
 	}
 	
 	public Color getColor() {
-		return color;
+		return backColor;
 	}
 	
 	public Image getImage() {
